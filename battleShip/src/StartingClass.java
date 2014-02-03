@@ -19,7 +19,7 @@ public class StartingClass extends JFrame {
 			panel.setLayout(null);
 			
 			JButton serverButton = new JButton("Server");
-			serverButton.setBounds(0, 30, 80, 30);
+			serverButton.setBounds(0, 20, 80, 30);
 			
 			JButton quitButton = new JButton("Quit");
 			quitButton.setBounds(50, 60, 80, 30);
@@ -32,7 +32,7 @@ public class StartingClass extends JFrame {
 			
 			serverButton.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent event){
-					
+					startServer();
 				}
 			});
 			panel.add(serverButton);
@@ -87,7 +87,7 @@ public class StartingClass extends JFrame {
 		application.runClient(); // run client application
 	}
 
-	private static void runServer() {
+	private static void startServer() {
 		Server application = new Server(); // create server
 		application.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		application.runServer();// run server application

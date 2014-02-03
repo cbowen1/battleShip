@@ -47,11 +47,12 @@ public class Server extends JFrame
       ); // end call to addActionListener
       add( enterField, BorderLayout.NORTH );
 
-      displayArea = new JTextArea(); // create displayArea
-      add( new JScrollPane( displayArea ), BorderLayout.CENTER );
+     displayArea = new JTextArea(); // create displayArea
+     add( new JScrollPane( displayArea ), BorderLayout.CENTER );
 
       setSize( 300, 150 ); // set size of window
       setVisible( true ); // show window
+      
    } // end Server constructor
 
    // set up and run server 
@@ -83,7 +84,7 @@ public class Server extends JFrame
       catch ( IOException ioException ) 
       {
          ioException.printStackTrace();
-      } // end catch
+      } // end catch 
    } // end method runServer
 
    // wait for connection to arrive, then display connection info
@@ -94,12 +95,12 @@ public class Server extends JFrame
       connection = server.accept(); // allow server to accept connection   
       
       displayMessage( "Connection " + counter + " received from: " +
-         connection.getInetAddress().getHostName() );
+         connection.getInetAddress().getHostName() ); 
    } // end method waitForConnection
 
    // get streams to send and receive data
    private void getStreams() throws IOException
-   {
+   { 
       // set up output stream for objects
       output = new ObjectOutputStream( connection.getOutputStream() );
       output.flush(); // flush output buffer to send header information
