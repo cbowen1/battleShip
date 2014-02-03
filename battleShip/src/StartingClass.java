@@ -1,12 +1,8 @@
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -17,6 +13,37 @@ public class StartingClass extends JFrame {
 	}
 
 	private void initUI() {
+			JPanel panel = new JPanel();
+			getContentPane().add(panel);
+			
+			panel.setLayout(null);
+			
+			JButton serverButton = new JButton("Server");
+			serverButton.setBounds(0, 30, 80, 30);
+			
+			JButton quitButton = new JButton("Quit");
+			quitButton.setBounds(50, 60, 80, 30);
+			
+			quitButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent event){
+					System.exit(0);
+				}
+			});
+			
+			serverButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent event){
+					
+				}
+			});
+			panel.add(serverButton);
+			panel.add(quitButton);
+			setTitle("Quit Button");
+			setSize(300,200);
+			setLocationRelativeTo(null);
+			setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		
+		/*
 		JPanel panel = new JPanel();
 		getContentPane().add(panel);
 		panel.setLayout(null);
@@ -34,19 +61,19 @@ public class StartingClass extends JFrame {
 		//JButton clientButton = new JButton("Client");
 		
 		//background.add(clientButton);
-		//background.add(serverButton);
+		background.add(serverButton);
 
 		/*clientButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				runClient();
 			}
 		});
-*/
+
 		serverButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				runServer();
 			}
-		});
+		});*/
 	}
 
 	private static void runClient() {
@@ -74,7 +101,7 @@ public class StartingClass extends JFrame {
 			}
 		});
 		
-		runClient();
+		//runClient();
 		//runServer();
 
 	}
