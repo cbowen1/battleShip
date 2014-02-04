@@ -60,7 +60,7 @@ public class Server extends JFrame
       try // set up server to receive connections; process connections
       {
     	  
-         server = new ServerSocket( 12345, 100 ); // create ServerSocket
+    	  server = new ServerSocket( 12345 , 100 ); // create ServerSocket
          
          while ( true ) 
          {
@@ -91,6 +91,10 @@ public class Server extends JFrame
    private void waitForConnection() throws IOException
    {
       displayMessage( "Waiting for connection\n" );
+/****************************************************************************
+      88888888888888
+      88888888888888
+*****************************************************************************/
       
       connection = server.accept(); // allow server to accept connection   
       
