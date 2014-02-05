@@ -1,82 +1,62 @@
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.Socket;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.JTextField;
 
-public class StartingClass extends JFrame {
+public class StartingClass implements ActionListener {
+	JFrame mainFrame = null;
+	JButton myButton = null;
+	JButton clientButton = null;
+	JLabel label = null;
+	JLabel background = null;
+	JTextField enterField = null;
 
 	public static void main(String args[]) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				StartingClass ex = new StartingClass();
-				ex.setVisible(true);
-			}
-		});
-		// startClient();
-		//startServer();
-		
-		//If we run startClient or startServer from here it works. If we run it from  initUI it fails, hangs
+		StartingClass ex = new StartingClass();
 	}
 
 	private StartingClass() {
-		initUI();	
-	}
-
-	private static void startClient() {
-		Client application = new Client("127.0.0.1"); // connect to localhost
-		// Client application = new Client("131.118.193.218"); // connect to
-		// localhost
-		application.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		application.runClient(); // run client application
-	}
-
-	private static void startServer() {
-		Server application = new Server(); // create server
-		application.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		application.runServer();// run server application
-	}
-
-	private void initUI() {
-		JPanel panel = new JPanel();
-		getContentPane().add(panel);
-		panel.setLayout(null);
-
-		setTitle("Battleship Test");
-		setSize(1080, 800);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-		// Add background
-		setLayout(new BorderLayout());
-		JLabel background = new JLabel(new ImageIcon("src/img/splash.png"));
-		add(background);
-		background.setLayout(new FlowLayout());
-
-		JButton serverButton = new JButton("Server");
-		JButton clientButton = new JButton("Client");
-
-		background.add(clientButton);
-		background.add(serverButton);
-
-		clientButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				startClient();
+		mainFrame = new JFrame("Battleship Network Tester");
+		mainFrame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
 			}
 		});
-
-		serverButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				startServer();
-			}
-		});
+		
+		background =  new JLabel(new ImageIcon("src/img/splash.png")); 
+		myButton = new JButton("Server");
+		clientButton = new JButton("Client");
+		clientButton.addActionListener(this);
+		myButton.addActionListener(this);
+		myButton.setBounds(10, 10, 80, 30);
+		clientButton.setBounds(10,55,80,30);
+		//mainFrame.setLocationRelativeTo(null);
+		mainFrame.add(myButton);
+		mainFrame.add(clientButton);
+		mainFrame.add(background);
+		mainFrame.setSize(1080, 800);
+		mainFrame.setVisible(true);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		if (myButton == e.getSource()) {
+			//For testing we are allowing the user to run both the client and server
+			//To disable uncomment the following line:
+			//clientButton.setEnabled(false);
+			new chatServer();
+			//mainFrame.dispose();
+		}else if(clientButton == e.getSource()){
+			//For testing we are allowing the user to run both the client and server
+			//To disable uncomment the following line:			
+			//myButton.setEnabled(false);
+			new chatClient();
+			mainFrame.dispose();
+		}
+	}
 }
