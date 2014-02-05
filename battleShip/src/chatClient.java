@@ -1,4 +1,6 @@
-import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -6,15 +8,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 
-public class chatClient implements Runnable,ActionListener{
+public class chatClient extends JFrame implements Runnable,ActionListener{
 	private JFrame jfrm;
 	private Socket Socket;
 	private ObjectInputStream ois;
@@ -26,14 +32,65 @@ public class chatClient implements Runnable,ActionListener{
 	
 	private JTextField IPaddress;
 	String IP;
+	
 	public chatClient(){
+		 
+        setTitle("Chat Client");
+ 
+        JPanel panel = new JPanel(new GridBagLayout());
+        this.getContentPane().add(panel);
+ 
+        JTable t = new JTable(null);
+ 
+        JLabel label = new JLabel("Battleship V1.0");
+ 
+        JPanel tableButtonPanel = new JPanel();
+        tableButtonPanel.add(new JButton("Btn1"));
+        tableButtonPanel.add(new JButton("Btn2"));
+        tableButtonPanel.add(new JButton("Btn3"));
+ 
+        JPanel detailsPanel = createChatPanel();
+        detailsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+ 
+        GridBagConstraints gbc = new GridBagConstraints();
+ 
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+ 
+        panel.add(label, gbc);
+ 
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JScrollPane(t), gbc);
+ 
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(tableButtonPanel, gbc);
+ 
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 2;
+        panel.add(detailsPanel, gbc);
+ 
+        this.pack();
+ 
+        this.setVisible(true);
+		/*
 		jfrm = new JFrame("Chat Client");
+		jfrm.setMinimumSize(new Dimension(640,480));
 		jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jfrm.setLayout(new FlowLayout());
-		jfrm.setSize(300, 320);
+		
+		GridBagLayout layout = new GridBagLayout();
+		jfrm.setLayout(layout);
+		GridBagConstraints c = new GridBagConstraints();
+		
+		//jfrm.setLayout(new SpringLayout());
+		jfrm.setSize(1280, 1024);
 		//jfrm.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		Thread myThread = new Thread(this);
 		myThread.start();
+		//jta = new JTextArea();
 		jta = new JTextArea(15,15);
 		jta.setEditable(false);
 		jta.setLineWrap(true);
@@ -50,7 +107,7 @@ public class chatClient implements Runnable,ActionListener{
 		
 		JButton btnNewButton = new JButton("Connect");
 		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent ae) {
 				IP = IPaddress.getText();
 				System.out.println(IP);
 				jbtnSend.setEnabled(true);
@@ -58,15 +115,56 @@ public class chatClient implements Runnable,ActionListener{
 		});
 		btnNewButton.setBounds(0, 0, 80, 30);
 		jfrm.add(btnNewButton);
-		
+		//jfrm.getContentPane().add(mainBoard);
 		jfrm.getContentPane().add(jscrlp);
 		jfrm.getContentPane().add(jtfInput);
 		jfrm.getContentPane().add(jbtnSend);
+		
+		
+		
 		jfrm.setVisible(true);
 		if(IP==null){
 			jbtnSend.setEnabled(false);
 
 		}
+		pack();
+		*/
+	}
+	
+	private JPanel createChatPanel(){
+		
+		JPanel panel = new JPanel();
+		 
+        JLabel ipLabel = new JLabel("IP Address:");
+        JLabel chat =  new JLabel("Chat:");
+ 
+        JTextField ipAddress = new JTextField(15);
+ 
+        panel.setLayout(new GridBagLayout());
+ 
+        GridBagConstraints gbc = new GridBagConstraints();
+ 
+        int i=0;
+ 
+        gbc.gridx = 0;
+        gbc.gridy = i;
+        panel.add(ipLabel,  gbc);
+ 
+        gbc.gridx = 1;
+        gbc.gridy = i;
+        gbc.gridwidth = 2;
+        panel.add(ipAddress,  gbc);        
+ 
+        i++;
+ 
+        gbc.gridx = 0;
+        gbc.gridy = i;
+        panel.add(chat,gbc);
+        
+        i++;
+        
+        return panel;
+		
 	}
 	
 	public void run(){
@@ -87,7 +185,7 @@ public class chatClient implements Runnable,ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent ae){
-		if (ae.getActionCommand().equals("Send")||ae.getSource() instanceof JTextField){
+		if (ae.getActionCommand().equals("Send")){
 			try{
 				oos.writeObject(jtfInput.getText());
 				jta.setText(jta.getText()+"You Say: "+ jtfInput.getText()+"\n");
