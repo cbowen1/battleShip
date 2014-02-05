@@ -30,7 +30,8 @@ public class chatServer implements Runnable,ActionListener {
 		jfrm = new JFrame("Chat Server");
 		jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jfrm.setLayout(new FlowLayout());
-		jfrm.setSize(300, 320);
+		//jfrm.setSize(300, 320);
+		jfrm.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		Thread myThread = new Thread(this);
 		myThread.start();
 		jta = new JTextArea(15,15);
@@ -74,15 +75,6 @@ public class chatServer implements Runnable,ActionListener {
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				new chatServer();
-			}
-		});
-
 	}
 
 }

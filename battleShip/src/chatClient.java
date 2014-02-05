@@ -24,11 +24,14 @@ public class chatClient implements Runnable,ActionListener{
 	private JTextField jtfInput;
 	private JButton jbtnSend;
 	
+	private JTextField IPaddress;
+	String IP;
 	public chatClient(){
 		jfrm = new JFrame("Chat Client");
 		jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jfrm.setLayout(new FlowLayout());
 		jfrm.setSize(300, 320);
+		//jfrm.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		Thread myThread = new Thread(this);
 		myThread.start();
 		jta = new JTextArea(15,15);
@@ -40,15 +43,35 @@ public class chatClient implements Runnable,ActionListener{
 		jbtnSend = new JButton("Send");
 		jbtnSend.addActionListener(this);
 		
+		IPaddress = new JTextField();
+		IPaddress.setBounds(150, 50, 80, 20);
+		jfrm.add(IPaddress);
+		IPaddress.setColumns(10);
+		
+		JButton btnNewButton = new JButton("Connect");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				IP = IPaddress.getText();
+				System.out.println(IP);
+				jbtnSend.setEnabled(true);
+			}
+		});
+		btnNewButton.setBounds(0, 0, 80, 30);
+		jfrm.add(btnNewButton);
+		
 		jfrm.getContentPane().add(jscrlp);
 		jfrm.getContentPane().add(jtfInput);
 		jfrm.getContentPane().add(jbtnSend);
-		jfrm.setVisible(true);		
+		jfrm.setVisible(true);
+		if(IP==null){
+			jbtnSend.setEnabled(false);
+
+		}
 	}
 	
 	public void run(){
 		try{
-			Socket = new Socket("136.160.106.65" , 4444);
+			Socket = new Socket(IP , 4444);
 			oos = new ObjectOutputStream(Socket.getOutputStream());
 			ois = new ObjectInputStream(Socket.getInputStream());
 			while(true){
@@ -72,15 +95,6 @@ public class chatClient implements Runnable,ActionListener{
 				e.printStackTrace();
 			}
 		}		
-	}
-
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				new chatClient();
-			}
-		});
-
 	}
 
 }
