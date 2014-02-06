@@ -48,13 +48,13 @@ public class StartingClass implements ActionListener {
 		if (myButton == e.getSource()) {
 			//For testing we are allowing the user to run both the client and server
 			//To disable uncomment the following line:
-			//clientButton.setEnabled(false);
+			clientButton.setEnabled(false);
 			new chatServer();
-			//mainFrame.dispose();
+			mainFrame.dispose();
 		}else if(clientButton == e.getSource()){
 			//For testing we are allowing the user to run both the client and server
 			//To disable uncomment the following line:			
-			//myButton.setEnabled(false);
+			myButton.setEnabled(false);
 			new chatClient();
 			mainFrame.dispose();
 		}
