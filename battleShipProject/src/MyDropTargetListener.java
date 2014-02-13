@@ -14,9 +14,10 @@ import javax.swing.JPanel;
 class MyDropTargetListener extends DropTargetAdapter {
 
 	    private DropTarget dropTarget;
+	    private Point dropPoint;
 	    private JPanel p;
-
-	    public MyDropTargetListener(JPanel dropPanel, int x, int y) {
+	    
+	    public MyDropTargetListener(JPanel dropPanel) {
 	        p = dropPanel;
 	        dropTarget = new DropTarget(dropPanel, DnDConstants.ACTION_COPY, this, true, null);
 
@@ -24,31 +25,36 @@ class MyDropTargetListener extends DropTargetAdapter {
 
 	    @Override
 	    public void drop(DropTargetDropEvent event) {
-	    	Point dropPoint;
 	        try {
-	            DropTarget test = (DropTarget) event.getSource();
-	            Component ca = (Component) test.getComponent();
-
+	            dropTarget = (DropTarget) event.getSource();
+	            Component ca = (Component) dropTarget.getComponent();
 	            dropPoint = ca.getMousePosition();
-
-
-	            //need to call a method here that determines the square the ship was dropped in so that the image file for the square
-	            //can be updated with the appropriate image
-	            System.out.println("Drop point is " + dropPoint);
-     
+	            
 	            //data that is transfered to new panel (ship image file)
 	            Transferable tr = event.getTransferable();
 
 	            //checks that the data being dragged is an imageFlavor
 	            if (event.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 	                Icon ico = (Icon) tr.getTransferData(DataFlavor.imageFlavor);
+	                String droppedShip = ico.toString();
+	                System.out.println(droppedShip);
 
+	                
 	                if (ico != null) {
-
-	                    p.add(new JLabel(ico));
-	                    p.revalidate();
-	                    p.repaint();
-	                    event.dropComplete(true);
+	                	if(droppedShip == Constants.CARRIER){
+	                		System.out.println("Place carrier at " + dropPoint.x);
+	                		placeCarrier(ico,dropPoint,p,event);
+	                	}else if(droppedShip == Constants.BATTLESHIP){
+	                		System.out.println("Place Battleship");
+	                		placeBattleship(ico,dropPoint,p,event);
+	                	}else if(droppedShip == Constants.CRUISER){
+	                		placeCruiser(ico,dropPoint,p,event);
+	                	}else if(droppedShip == Constants.DESTROYER){
+	                		placeDestroyer(ico,dropPoint,p,event);
+	                	}else if(droppedShip == Constants.SUBMARINE){
+	                		placeSubmarine(ico,dropPoint,p,event);
+	                	}	
+	                
 	                }
 	            } else {
 	                event.rejectDrop();
@@ -59,5 +65,66 @@ class MyDropTargetListener extends DropTargetAdapter {
 	        }
 
 	    }
+
+		private void placeCarrier(Icon ico, Point dropPoint2, JPanel p2, DropTargetDropEvent event) {
+			int xPx = dropPoint.x;
+			int yPx = dropPoint.y;
+			int xGrid=0;
+			int yGrid=0;
+			System.out.println(xPx);
+			if(xPx>227){
+				dropPoint.x = 167;
+			}else if(xPx > 162){
+				dropPoint.x = 135;
+			}else{
+				dropPoint.x = 100;
+			}
+				//if(xPx > null){
+					
+				//}
+				//xGrid = 5;
+				//System.out.println("You want to place the carrier in..." + xGrid + ","+ yGrid);
+				JLabel ship = new JLabel(ico);
+				ship.setBounds(dropPoint.x, dropPoint.y, ico.getIconWidth(), ico.getIconHeight());
+				p.add(ship);
+				p.revalidate();
+				p.repaint();
+            	event.dropComplete(true);		
+			//}
+
+		}
+		private void placeBattleship(Icon ico, Point dropPoint2, JPanel p2, DropTargetDropEvent event) {
+			JLabel ship = new JLabel(ico);
+    		ship.setBounds(dropPoint.x, dropPoint.y, ico.getIconWidth(), ico.getIconHeight());
+    		p.add(ship);
+    		p.revalidate();
+            p.repaint();
+            event.dropComplete(true);	
+		}
+		private void placeCruiser(Icon ico, Point dropPoint2, JPanel p2, DropTargetDropEvent event) {
+			JLabel ship = new JLabel(ico);
+    		ship.setBounds(dropPoint.x, dropPoint.y, ico.getIconWidth(), ico.getIconHeight());
+    		p.add(ship);
+    		p.revalidate();
+            p.repaint();
+            event.dropComplete(true);	
+		}
+		private void placeDestroyer(Icon ico, Point dropPoint2, JPanel p2, DropTargetDropEvent event) {
+			JLabel ship = new JLabel(ico);
+    		ship.setBounds(dropPoint.x, dropPoint.y, ico.getIconWidth(), ico.getIconHeight());
+    		p.add(ship);
+    		p.revalidate();
+            p.repaint();
+            event.dropComplete(true);	
+		}
+		private void placeSubmarine(Icon ico, Point dropPoint2, JPanel p2, DropTargetDropEvent event) {
+			JLabel ship = new JLabel(ico);
+    		ship.setBounds(dropPoint.x, dropPoint.y, ico.getIconWidth(), ico.getIconHeight());
+    		p.add(ship);
+    		p.revalidate();
+            p.repaint();
+            event.dropComplete(true);	
+		}			
+
    
 	}

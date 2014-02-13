@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -26,8 +27,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
-
 
 public class clientGUI extends JFrame implements Runnable, ActionListener {
 
@@ -57,7 +58,6 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
 	Ship submarine;
 	Ship destroyer;
 	
-    
 	private Socket Socket;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
@@ -85,16 +85,24 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
     }
                        
     private void initComponents() {
+    	
         mainBoard = new JPanel();
         secondaryDisp = new JPanel();
-        smallGrid = new JPanel();
+        smallGrid = new JPanel(){
+        	Image image = Toolkit.getDefaultToolkit().getImage(Constants.GRID);
+            public void paintComponent( Graphics g )
+            {
+                 super.paintComponent(g);
+                 g.drawImage( image, 0, 0, this );
+            }	
+        };
         shipMenu = new JPanel();
         
-        carrier = new Ship("Carrier","src/img/ships/carrier2.png",150,50);
-        battleship = new Ship("Battleship","src/img/ships/battleship.png",125,50);
-        cruiser = new Ship("Cruiser","src/img/ships/cruiser.png",100,50);
-        submarine = new Ship("Submarine","src/img/ships/sub.png",100,50);
-        destroyer = new Ship("Destroyer","src/img/ships/destroyer.png",100,50);
+        carrier = new Ship("Carrier",Constants.CARRIER,150,50);
+        battleship = new Ship("Battleship",Constants.BATTLESHIP,125,50);
+        cruiser = new Ship("Cruiser",Constants.CRUISER,100,50);
+        submarine = new Ship("Submarine",Constants.SUBMARINE,100,50);
+        destroyer = new Ship("Destroyer",Constants.DESTROYER,100,50);
         
         carrier.setSize(5);
         battleship.setSize(4);
@@ -102,9 +110,8 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         submarine.setSize(3);
         destroyer.setSize(2);
         
-        
         header = new JPanel(){
-        	Image image = Toolkit.getDefaultToolkit().getImage("src/img/header2.png");
+        	Image image = Toolkit.getDefaultToolkit().getImage(Constants.HEADER);
             public void paintComponent( Graphics g )
             {
                  super.paintComponent(g);
@@ -130,8 +137,8 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         
         secondaryDisp.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         secondaryDisp.setPreferredSize(new Dimension(200, 200));
-        
-        smallGrid.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        smallGrid.setBorder(new LineBorder(Color.BLACK));
+        //smallGrid.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         javax.swing.GroupLayout smallGridLayout = new javax.swing.GroupLayout(smallGrid);
         smallGrid.setLayout(smallGridLayout);
         smallGridLayout.setHorizontalGroup(
@@ -143,7 +150,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
             .addGap(0, 0, Short.MAX_VALUE)
         );
         //This section shows the ships that can be dragged onto the users grid
-        shipMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        shipMenu.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         shipMenu.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         
@@ -190,20 +197,27 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
                     .addComponent(smallGrid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+        new MyDropTargetListener(smallGrid);
+        smallGrid.setPreferredSize(new Dimension(325,325));
+        smallGrid.setMinimumSize(new Dimension(325,325));
+        smallGrid.setMaximumSize(new Dimension(325,325));
+       
+        smallGrid.setLayout(null);
         
-        new Grid(smallGrid,textBox,32,1);
-        
-        //new MyDropTargetListener(secondaryDisp);
-        
-        
+
         //begin code to make drag and drop work
         MyDragGestureListener dlistener = new MyDragGestureListener();
         DragSource ds1 = new DragSource();
-        ds1.createDefaultDragGestureRecognizer(subBox, DnDConstants.ACTION_COPY, dlistener);
-        
         DragSource ds2 = new DragSource();
-        ds2.createDefaultDragGestureRecognizer(carrierBox, DnDConstants.ACTION_COPY, dlistener);
+        DragSource ds3 = new DragSource();
+        DragSource ds4 = new DragSource();
+        DragSource ds5 = new DragSource();        
         
+        ds1.createDefaultDragGestureRecognizer(carrierBox, DnDConstants.ACTION_COPY, dlistener);
+        ds2.createDefaultDragGestureRecognizer(battleshipBox, DnDConstants.ACTION_COPY, dlistener);
+        ds3.createDefaultDragGestureRecognizer(cruiserBox, DnDConstants.ACTION_COPY, dlistener);
+        ds4.createDefaultDragGestureRecognizer(subBox, DnDConstants.ACTION_COPY, dlistener);
+        ds5.createDefaultDragGestureRecognizer(destroyerBox, DnDConstants.ACTION_COPY, dlistener);        
         
         //end drag and drop code
         

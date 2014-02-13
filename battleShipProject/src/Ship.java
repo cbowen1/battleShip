@@ -11,13 +11,7 @@ public class Ship {
 	
 	public Ship(String name,String src,int wid,int hgt){
 		shipName = name;
-		if(name == "Carrier"){
-			icon = new ImageIcon(src);  
-		}else{
-			icon = 
-					(new ImageIcon(((new ImageIcon(src)).getImage()).getScaledInstance(wid, hgt, Image.SCALE_SMOOTH)));  
-		}
-
+		icon = new ImageIcon(src);  
 	}
 	
 	public ImageIcon getImg(){

@@ -87,7 +87,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
         mainBoard = new JPanel();
         secondaryDisp = new JPanel();
         header = new JPanel(){
-        	Image image = Toolkit.getDefaultToolkit().getImage("src/img/header2.png");
+        	Image image = Toolkit.getDefaultToolkit().getImage(Constants.HEADER);
             public void paintComponent( Graphics g )
             {
                  super.paintComponent(g);
@@ -95,11 +95,11 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
             }	
         };
         
-        carrier = new Ship("Carrier","src/img/ships/carrier.png",150,50);
-        battleship = new Ship("Battleship","src/img/ships/battleship.png",125,50);
-        cruiser = new Ship("Cruiser","src/img/ships/cruiser.png",100,50);
-        submarine = new Ship("Submarine","src/img/ships/sub.png",100,50);
-        destroyer = new Ship("Destroyer","src/img/ships/destroyer.png",100,50);
+        carrier = new Ship("Carrier",Constants.CARRIER,150,50);
+        battleship = new Ship("Battleship",Constants.BATTLESHIP,125,50);
+        cruiser = new Ship("Cruiser",Constants.CRUISER,100,50);
+        submarine = new Ship("Submarine",Constants.SUBMARINE,100,50);
+        destroyer = new Ship("Destroyer",Constants.DESTROYER,100,50);
         
         jPanel2 = new JPanel();
         jScrollPane2 = new JScrollPane();

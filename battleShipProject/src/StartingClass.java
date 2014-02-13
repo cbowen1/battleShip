@@ -11,7 +11,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 public class StartingClass implements ActionListener {
-	
 	JFrame mainFrame = null;
 	JButton myButton = null;
 	JButton clientButton = null;
@@ -20,6 +19,20 @@ public class StartingClass implements ActionListener {
 	JTextField enterField = null;
 
 	public static void main(String args[]) {
+		Constants.myGrid = new char[10][10];
+		for(int i=0;i<10;i++){
+			for(int j=0;j<10;j++){
+				Constants.myGrid[i][j]='E';
+			}
+		}
+		
+		for(int i=0;i<10;i++){
+			for(int j=0;j<10;j++){
+				//System.out.print(Constants.myGrid[i][j]);
+			}
+			System.out.println();
+		}
+		
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -40,14 +53,14 @@ public class StartingClass implements ActionListener {
 	}
 
 	private StartingClass() {
-		mainFrame = new JFrame("Battleship Network Tester");
+		mainFrame = new JFrame("Battleship Welcome");
 		mainFrame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
 		});
 		
-		background =  new JLabel(new ImageIcon("src/img/splash.png")); 
+		background =  new JLabel(new ImageIcon(Constants.SPLASH)); 
 		myButton = new JButton("Server");
 		clientButton = new JButton("Client");
 		clientButton.addActionListener(this);
@@ -64,14 +77,10 @@ public class StartingClass implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		if (myButton == e.getSource()) {
-			//For testing we are allowing the user to run both the client and server
-			//To disable uncomment the following line:
 			clientButton.setEnabled(false);
 			new serverGUI();
 			mainFrame.dispose();
-		}else if(clientButton == e.getSource()){
-			//For testing we are allowing the user to run both the client and server
-			//To disable uncomment the following line:			
+		}else if(clientButton == e.getSource()){		
 			myButton.setEnabled(false);
 			new clientGUI();
 			mainFrame.dispose();

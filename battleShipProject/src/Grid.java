@@ -16,14 +16,16 @@ public class Grid extends JFrame {
 	//if which == 1 we are looking at our own board
 	private int which;
 	private int boxSize;
+	JTextArea textArea;
 
 	public Grid(JPanel playerPanel,JTextArea textBox,int width,int which){ 
+		textArea = textBox;
 		boxSize = width;
 		//playerPanel = new JPanel(); // set up panel for squares in board
 	    playerPanel.setLayout( new GridLayout( 10, 10, 0, 0 ) );	
 	    playerGrid = new Square[10][10]; // create Grid
 	    
-	    playerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Player Board"));
+	    //playerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Player Board"));
 	    // loop over the rows in the board
 	    for ( int row = 0; row < playerGrid.length; row++ ) 
 	    {
@@ -32,8 +34,9 @@ public class Grid extends JFrame {
 	       {
 	          // create square
 	          playerGrid[ row ][ column ] = new Square( " ", row, column);
-	          playerPanel.add( playerGrid[ row ][ column ] ); // add square  
-	          new MyDropTargetListener(playerGrid[row][column],row,column);
+	          playerPanel.add( playerGrid[ row ][ column ] ); // add square
+	          new MyDropTargetListener(playerGrid[row][column]);
+	          
 	       } // end inner for
 	    } // end outer for
 
@@ -65,20 +68,15 @@ public class Grid extends JFrame {
 
 	               } // end method mouseReleased
 
-				private void sendClickedSquare(Object squareLocation) {
-					// TODO Auto-generated method stub
-					
-				}
-
 				private Object getSquareLocation() {
 					Square curr = new Square(contents, xCord, yCord);
 					return curr;
 				}
 
 				private void setCurrentSquare(Square square) {
-	
-					System.out.println("The square x = "+xCord+" y = "+ yCord);
-					
+					if (which == 0){
+						textArea.setText(textArea.getText() + "Shoot at " + xCord + " " + yCord + "\n");
+					}
 				}
 	            } // end anonymous inner class
 	         ); // end call to addMouseListener
@@ -103,7 +101,7 @@ public class Grid extends JFrame {
 	      {
 	         super.paintComponent( g );
 
-	         g.drawRect( 0, 0, 30, 30 ); // draw square
+	         g.drawRect( 0, 0, boxSize-1, boxSize-1 ); // draw square
 	         //g.drawString( contents, 11, 20 ); // draw mark   
 	      } // end method paintComponent
 	   } // end inner-class Square
