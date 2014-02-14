@@ -1,4 +1,5 @@
 import java.awt.Image;
+import java.awt.Point;
 
 import javax.swing.ImageIcon;
 
@@ -33,4 +34,5 @@ public class Ship {
 	public void setSize(int squares){
 		size = squares;
 	}
+	
 }

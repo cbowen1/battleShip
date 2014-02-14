@@ -52,11 +52,15 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
     private JLabel subBox;
     private JLabel destroyerBox;
     
+    private JButton beginGame;
+    
 	Ship carrier;
 	Ship battleship;
 	Ship cruiser;
 	Ship submarine;
 	Ship destroyer;
+	
+	game Game;
 	
 	private Socket Socket;
 	private ObjectInputStream ois;
@@ -85,7 +89,13 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
     }
                        
     private void initComponents() {
+    	Game = new game();
+    	//test code for displaying the name::
+    	Game.setGuestPlayer("cale");
+    	Game.setHostPlayer("HOST NAME");
     	
+    	beginGame = new JButton();
+    	beginGame.setText("Play");
         mainBoard = new JPanel();
         secondaryDisp = new JPanel();
         smallGrid = new JPanel(){
@@ -163,19 +173,24 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
+        //gbc.gridheight = 2;
         shipMenu.add(carrierBox,gbc);
     
         gbc.gridy = 1;
         shipMenu.add(battleshipBox,gbc);
         
-        gbc.gridy++;
+        gbc.gridy = 3;
         shipMenu.add(cruiserBox,gbc);
         
-        gbc.gridy++;
+        gbc.gridy = 5;
         shipMenu.add(subBox,gbc);
         
-        gbc.gridy++;
+        gbc.gridy = 7;
         shipMenu.add(destroyerBox,gbc);
+        
+        beginGame.addActionListener(this);
+        gbc.gridy = 9;
+        shipMenu.add(beginGame,gbc);
 
         javax.swing.GroupLayout scoreLayout = new javax.swing.GroupLayout(secondaryDisp);
         secondaryDisp.setLayout(scoreLayout);
@@ -212,13 +227,12 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         DragSource ds3 = new DragSource();
         DragSource ds4 = new DragSource();
         DragSource ds5 = new DragSource();        
-        
+        	
         ds1.createDefaultDragGestureRecognizer(carrierBox, DnDConstants.ACTION_COPY, dlistener);
         ds2.createDefaultDragGestureRecognizer(battleshipBox, DnDConstants.ACTION_COPY, dlistener);
         ds3.createDefaultDragGestureRecognizer(cruiserBox, DnDConstants.ACTION_COPY, dlistener);
         ds4.createDefaultDragGestureRecognizer(subBox, DnDConstants.ACTION_COPY, dlistener);
         ds5.createDefaultDragGestureRecognizer(destroyerBox, DnDConstants.ACTION_COPY, dlistener);        
-        
         //end drag and drop code
         
         header.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
@@ -362,6 +376,16 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
 			} catch(IOException e){
 				e.printStackTrace();
 			}
+		}else if(ae.getActionCommand().equals("Play")){
+			if(!myShipGrid.carrierPlaced || !myShipGrid.battleshipPlaced || !myShipGrid.cruiserPlaced
+					|| !myShipGrid.subPlaced || !myShipGrid.destroyerPlaced){
+				textBox.setText(textBox.getText()+"Please place your ships first\n");
+			}else{
+				beginGame.setEnabled(false);
+				Game.playGame(textBox);
+				
+			}
+			
 		}
 		
 	}

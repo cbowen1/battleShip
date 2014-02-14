@@ -1,6 +1,8 @@
+import javax.swing.JTextArea;
+
 
 public class game {
-	
+	static boolean gameReady = false;
 	String hostPlayer;
 	String guestPlayer;
 	
@@ -15,5 +17,9 @@ public class game {
 	}
 	String getGuestPlayer(){
 		return guestPlayer;
+	}
+	public void playGame(JTextArea textBox){
+		textBox.setText(textBox.getText()+"Let's play some battleship\n");
+		System.out.println(myShipGrid.subPlaced);
 	}
 }
