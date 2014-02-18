@@ -346,12 +346,12 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 				String text = input.toString();
 				if(text.startsWith("#!")){
 					text = text.substring(2);
-					System.out.println(text);
-					//if(text == "READY"){
+					if(text.equals("READY")){
 						game.guestReady = true;
-					//}else{
+						textBox.setText(textBox.getText()+Game.getGuestPlayer()+" is ready.\n");
+					}else{
 						textBox.setText(textBox.getText()+text+"\n");	
-					//}
+					}
 				}else{
 					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	
 				}
@@ -396,7 +396,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
     	if (ae.getActionCommand().equals("Send")){
 			try{
 				oos.writeObject(chatInput.getText());
-				textBox.setText(textBox.getText()+"You Say: "+ chatInput.getText()+"\n");
+				textBox.setText(textBox.getText()+Game.getHostPlayer()+":"+ chatInput.getText()+"\n");
 				chatInput.setText("");
 			} catch(IOException e){
 				e.printStackTrace();

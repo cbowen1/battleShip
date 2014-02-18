@@ -359,13 +359,12 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 				String text = input.toString();
 				if(text.startsWith("#!")){
 					text = text.substring(2);
-					System.out.println(text);
-					//if(text == "READY"){
+					if(text.equals("READY")){
 						game.hostReady = true;
-					//}else{
+						textBox.setText(textBox.getText()+Game.getHostPlayer()+" is ready.\n");
+					}else{
 						textBox.setText(textBox.getText()+text+"\n");	
-						//text="";
-					//}
+					}
 				}else{
 					textBox.setText(textBox.getText()+Game.getHostPlayer()+": "+(String)input+"\n");	
 				}

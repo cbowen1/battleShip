@@ -2,7 +2,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 
-public class game {
+public class game implements Runnable {
 	static boolean hostReady = false;
 	static boolean guestReady = false;
 	String hostPlayer;
@@ -24,8 +24,9 @@ public class game {
 	 * 	the fifth slot will be the remaining number of hit points for that ship or an X if a miss
 	 */
 	static String returnInfo;
-	
+
 	static String runner;
+	private JTextArea text;
 	
 	void setRunner(String txt){
 		runner = txt;
@@ -41,13 +42,24 @@ public class game {
 	void setGuestPlayer(String name){
 		guestPlayer = name;
 	}
-	String getHostPlayer(){
+	public String getHostPlayer(){
 		return hostPlayer;
 	}
-	String getGuestPlayer(){
+	public String getGuestPlayer(){
 		return guestPlayer;
 	}
 	public void playGame(JTextArea textBox,JPanel shipMenu){
+		Thread myThread = new Thread(this);
+		myThread.start();
+		text = textBox;
+		
+		
+		shipMenu.removeAll();
+		shipMenu.repaint();
+	}
+
+	@Override
+	public void run() {
 		if(getRunner()=="client"){
 			guestReady = true;
 			clientGUI.sendMessage("#!READY");
@@ -55,9 +67,7 @@ public class game {
 			serverGUI.sendMessage("#!READY");
 			hostReady = true;
 		}
-		shipMenu.removeAll();
-		shipMenu.repaint();
-		//textBox.setText(textBox.getText()+"Let's play some battleship\n");
+		
 		while(!hostReady || !guestReady){
 			try {
 				Thread.sleep(240);
@@ -65,30 +75,43 @@ public class game {
 				e.printStackTrace();
 			}
 		}
-		textBox.setText(textBox.getText()+"NOW PLAYING!"+"\n");
+		int counter = 0;
+		serverTurn = true;
 		while(!gameOver){
-			if(getRunner()=="server"){
+			if(getRunner()=="server"){	//The server gui called the game
 				if(serverTurn){	//Our turn
-					serverGUI.sendMessage(shootInfo);
+					text.setText("Server running, our turn");
+					
+					//serverGUI.sendMessage(shootInfo);
 					serverTurn = false;
 					guestTurn = true;
 				}else{	//The opponents turn
-					
+					text.setText("Server running, other turn");
+					serverTurn = true;
+					guestTurn = false;
 				}
-			}else{
+			}else{	//the client gui called the game
 				if(serverTurn){	//The opponents turn
-					
+					text.setText("Client running, oppnent turn");
+					serverTurn = false;
+					guestTurn = true;
 				}else{ //Our turn
-					clientGUI.sendMessage(shootInfo);
+					text.setText("Client running, our turn");
+					//clientGUI.sendMessage(shootInfo);
 					guestTurn = false;
 					serverTurn = true;
 				}
 			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			counter++;
+			if(counter == 5)
+				gameOver = true;
+			
 		}	//End of the while loop to run run the game
+		text.setText("Game Over\nThanks for playing");
 	}
 }
