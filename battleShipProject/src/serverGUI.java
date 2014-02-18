@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -36,7 +38,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
     private JButton connectBtn;
     private JPanel jPanel2;
     private JScrollPane jScrollPane2;
-    private JTextArea textBox;
+    private static JTextArea textBox;
     private JTextField chatInput;
     private JPanel mainBoard;
     private JPanel secondaryDisp;
@@ -44,16 +46,16 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
+	private static ObjectOutputStream oos;
 	
     private JPanel shipMenu;
     private JPanel smallGrid;	
     
-    private JLabel carrierBox;
-    private JLabel battleshipBox;
-    private JLabel cruiserBox;
-    private JLabel subBox;
-    private JLabel destroyerBox;
+    private static JLabel carrierBox;
+    private static JLabel battleshipBox;
+    private static JLabel cruiserBox;
+    private static JLabel subBox;
+    private static JLabel destroyerBox;
     
     private JButton beginGame;
     
@@ -90,6 +92,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
                        
     private void initComponents() {
     	Game = new game();
+    	Game.setRunner("server");
     	
     	Game.setGuestPlayer("Cale");
     	Game.setHostPlayer("Ryan");
@@ -212,9 +215,26 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
         );
         new MyDropTargetListener(smallGrid);
         smallGrid.setPreferredSize(new Dimension(325,325));
+        smallGrid.setMinimumSize(new Dimension(325,325));
+        smallGrid.setMaximumSize(new Dimension(325,325));
+        smallGrid.setLayout(null);
+        
+        //begin code to make drag and drop work
+        MyDragGestureListener dlistener = new MyDragGestureListener();
+        DragSource ds1 = new DragSource();
+        DragSource ds2 = new DragSource();
+        DragSource ds3 = new DragSource();
+        DragSource ds4 = new DragSource();
+        DragSource ds5 = new DragSource();        
+        	
+        ds1.createDefaultDragGestureRecognizer(carrierBox, DnDConstants.ACTION_COPY, dlistener);
+        ds2.createDefaultDragGestureRecognizer(battleshipBox, DnDConstants.ACTION_COPY, dlistener);
+        ds3.createDefaultDragGestureRecognizer(cruiserBox, DnDConstants.ACTION_COPY, dlistener);
+        ds4.createDefaultDragGestureRecognizer(subBox, DnDConstants.ACTION_COPY, dlistener);
+        ds5.createDefaultDragGestureRecognizer(destroyerBox, DnDConstants.ACTION_COPY, dlistener);        
+        //end drag and drop code
         
         header.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
-
         GroupLayout headerLayout = new GroupLayout(header);
         header.setLayout(headerLayout);
         headerLayout.setHorizontalGroup(
@@ -323,7 +343,18 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			ois = new ObjectInputStream(clientSocket.getInputStream());
 			while(true){
 				Object input = ois.readObject();
-				textBox.setText(textBox.getText()+"Guest says: "+(String)input+"\n");
+				String text = input.toString();
+				if(text.startsWith("#!")){
+					text = text.substring(2);
+					System.out.println(text);
+					//if(text == "READY"){
+						game.guestReady = true;
+					//}else{
+						textBox.setText(textBox.getText()+text+"\n");	
+					//}
+				}else{
+					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	
+				}
 			}
 		}catch (IOException e){
 			e.printStackTrace();
@@ -332,6 +363,33 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		}
 		
 	}
+
+    static public void disableCarrierBox(){
+    	carrierBox.setEnabled(false);
+    }
+    static public void disableBattleshipBox(){
+    	battleshipBox.setEnabled(false);
+    }
+    static public void disableCruiserBox(){
+    	cruiserBox.setEnabled(false);
+    }
+    static public void disableSubBox(){
+    	subBox.setEnabled(false);
+    }
+    static public void disableDestroyerBox(){
+    	destroyerBox.setEnabled(false);
+    }
+    static public void displayText(String text){
+    	textBox.setText(textBox.getText()+text+"\n");
+    }
+    
+    static public void sendMessage(String text){
+    	try {
+			oos.writeObject(text);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }	
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
@@ -343,25 +401,36 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			} catch(IOException e){
 				e.printStackTrace();
 			}
+		}else if(ae.getActionCommand().equals("Play")){
+			if(!myShipGrid.carrierPlaced || !myShipGrid.battleshipPlaced || !myShipGrid.cruiserPlaced
+					|| !myShipGrid.subPlaced || !myShipGrid.destroyerPlaced){
+				textBox.setText(textBox.getText()+"Please place your ships first\n");
+			}else{
+				beginGame.setEnabled(false);
+				Game.playGame(textBox,shipMenu);
+			}
 		}
 		
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		switch (e.getKeyCode()){
+		case KeyEvent.VK_UP:
+			Ship.setOrientation('v');
+			textBox.setText(textBox.getText()+"Place your ship VERTICALLY"+"\n");
+			break;
+		case KeyEvent.VK_DOWN:
+			Ship.setOrientation('h');
+			textBox.setText(textBox.getText()+"Place your ship HORIZONTALLY"+"\n");
+			break;
+		}
 		
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyTyped(KeyEvent e) {}
 }

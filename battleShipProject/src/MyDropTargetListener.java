@@ -93,7 +93,6 @@ class MyDropTargetListener extends DropTargetAdapter {
 				int xGrid=0;
 				int yGrid=0;
 				if(Ship.orientation == 'v'){
-					System.out.println(yPx);
 					if(xPx > 292){
 						dropPoint.x = 286;
 						xGrid = 9;
@@ -155,7 +154,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							temp++;
 						}
 						myShipGrid.carrierPlaced = true;
-						clientGUI.disableCarrierBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientCarrierBox();
+						}else{
+							serverGUI.disableCarrierBox();
+						}
 						return dropPoint;
 					}
 				}else{
@@ -217,12 +220,16 @@ class MyDropTargetListener extends DropTargetAdapter {
 					if(!myShipGrid.check('h', 5, myShipGrid.carrierLocation)){
 						return null;
 					}else{
-						clientGUI.disableCarrierBox();
 						myShipGrid.carrierPlaced = true;
 						int temp = xGrid;
 						for(int i=xGrid;i<xGrid+5;i++){
 							Constants.myGrid[yGrid][temp] = 'C';
 							temp++;
+						}
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientCarrierBox();
+						}else{
+							serverGUI.disableCarrierBox();
 						}
 						return dropPoint;
 					}
@@ -239,7 +246,6 @@ class MyDropTargetListener extends DropTargetAdapter {
 				int xPx = dropPoint.x;
 				int yPx = dropPoint.y;
 				if(Ship.orientation == 'v'){
-					System.out.println(yPx);
 					if(xPx > 292){
 						dropPoint.x = 292;
 						xGrid = 9;
@@ -304,7 +310,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							temp++;
 						}
 						myShipGrid.battleshipPlaced = true;
-						clientGUI.disableBattleshipBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientBattleshipBox();
+						}else{
+							serverGUI.disableBattleshipBox();
+						}
 						return dropPoint;
 					}			
 				}else{
@@ -373,7 +383,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							Constants.myGrid[yGrid][temp] = 'B';
 							temp++;
 						}
-						clientGUI.disableBattleshipBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientBattleshipBox();
+						}else{
+							serverGUI.disableBattleshipBox();
+						}
 						return dropPoint;
 					}
 				}
@@ -456,7 +470,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							temp++;
 						}
 						myShipGrid.cruiserPlaced = true;
-						clientGUI.disableCruiserBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientCruiserBox();
+						}else{
+							serverGUI.disableCruiserBox();
+						}
 						return dropPoint;
 					}
 				}else{
@@ -529,7 +547,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							Constants.myGrid[yGrid][temp] = 'R';
 							temp++;
 						}
-						clientGUI.disableCruiserBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientCruiserBox();
+						}else{
+							serverGUI.disableCruiserBox();
+						}
 						return dropPoint;	
 					}
 				}
@@ -611,7 +633,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							temp++;
 						}
 						myShipGrid.subPlaced = true;
-						clientGUI.disableSubBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientSubBox();
+						}else{
+							serverGUI.disableSubBox();
+						}
 						return dropPoint;
 					}
 				}else{
@@ -683,7 +709,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							Constants.myGrid[yGrid][temp] = 'S';
 							temp++;
 						}
-						clientGUI.disableSubBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientSubBox();
+						}else{
+							serverGUI.disableSubBox();
+						}
 						return dropPoint;
 					}	
 				}
@@ -768,7 +798,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							temp++;
 						}
 						myShipGrid.destroyerPlaced = true;
-						clientGUI.disableDestroyerBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientDestroyerBox();
+						}else{
+							serverGUI.disableDestroyerBox();
+						}
 						return dropPoint;
 					}
 				}else{
@@ -843,7 +877,11 @@ class MyDropTargetListener extends DropTargetAdapter {
 							Constants.myGrid[yGrid][temp] = 'D';
 							temp++;
 						}
-						clientGUI.disableDestroyerBox();
+						if(game.getRunner()=="client"){
+							clientGUI.disableClientDestroyerBox();
+						}else{
+							serverGUI.disableDestroyerBox();
+						}
 						return dropPoint;	
 					}
 				}

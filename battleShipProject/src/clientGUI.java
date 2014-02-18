@@ -50,11 +50,11 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
     private JPanel shipMenu;
     private JPanel smallGrid;
     
-    private static JLabel carrierBox;
-    private static JLabel battleshipBox;
-    private static JLabel cruiserBox;
-    private static JLabel subBox;
-    private static JLabel destroyerBox;
+    private static JLabel cliCarrierBox;
+    private static JLabel cliBattleshipBox;
+    private static JLabel cliCruiserBox;
+    private static JLabel cliSubBox;
+    private static JLabel cliDestroyerBox;
     
     private JButton beginGame;
 
@@ -94,6 +94,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
                        
     private void initComponents() {
     	Game = new game();
+    	Game.setRunner("client");
     	
     	//test code for displaying the name::
     	Game.setGuestPlayer("Cale");
@@ -166,32 +167,33 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
         shipMenu.setLayout(new GridBagLayout());
         
         GridBagConstraints gbc = new GridBagConstraints();        
-        carrierBox = new JLabel(carrier.getImg(),JLabel.CENTER);
-        battleshipBox = new JLabel(battleship.getImg(),JLabel.CENTER);
-        cruiserBox = new JLabel(cruiser.getImg(),JLabel.CENTER);
-        subBox = new JLabel(submarine.getImg(),JLabel.CENTER);
-        destroyerBox = new JLabel(destroyer.getImg(),JLabel.CENTER);
+        cliCarrierBox = new JLabel(carrier.getImg(),JLabel.CENTER);
+        cliBattleshipBox = new JLabel(battleship.getImg(),JLabel.CENTER);
+        cliCruiserBox = new JLabel(cruiser.getImg(),JLabel.CENTER);
+        cliSubBox = new JLabel(submarine.getImg(),JLabel.CENTER);
+        cliDestroyerBox = new JLabel(destroyer.getImg(),JLabel.CENTER);
         
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
-        shipMenu.add(carrierBox,gbc);
+        shipMenu.add(cliCarrierBox,gbc);
     
         gbc.gridy = 1;
-        shipMenu.add(battleshipBox,gbc);
+        shipMenu.add(cliBattleshipBox,gbc);
         
         gbc.gridy = 3;
-        shipMenu.add(cruiserBox,gbc);
+        shipMenu.add(cliCruiserBox,gbc);
         
         gbc.gridy = 5;
-        shipMenu.add(subBox,gbc);
+        shipMenu.add(cliSubBox,gbc);
         
         gbc.gridy = 7;
-        shipMenu.add(destroyerBox,gbc);
+        shipMenu.add(cliDestroyerBox,gbc);
         
         beginGame.addActionListener(this);
         gbc.gridy = 9;
         shipMenu.add(beginGame,gbc);
+        beginGame.setEnabled(false);
 
         javax.swing.GroupLayout scoreLayout = new javax.swing.GroupLayout(secondaryDisp);
         secondaryDisp.setLayout(scoreLayout);
@@ -228,11 +230,11 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
         DragSource ds4 = new DragSource();
         DragSource ds5 = new DragSource();        
         	
-        ds1.createDefaultDragGestureRecognizer(carrierBox, DnDConstants.ACTION_COPY, dlistener);
-        ds2.createDefaultDragGestureRecognizer(battleshipBox, DnDConstants.ACTION_COPY, dlistener);
-        ds3.createDefaultDragGestureRecognizer(cruiserBox, DnDConstants.ACTION_COPY, dlistener);
-        ds4.createDefaultDragGestureRecognizer(subBox, DnDConstants.ACTION_COPY, dlistener);
-        ds5.createDefaultDragGestureRecognizer(destroyerBox, DnDConstants.ACTION_COPY, dlistener);        
+        ds1.createDefaultDragGestureRecognizer(cliCarrierBox, DnDConstants.ACTION_COPY, dlistener);
+        ds2.createDefaultDragGestureRecognizer(cliBattleshipBox, DnDConstants.ACTION_COPY, dlistener);
+        ds3.createDefaultDragGestureRecognizer(cliCruiserBox, DnDConstants.ACTION_COPY, dlistener);
+        ds4.createDefaultDragGestureRecognizer(cliSubBox, DnDConstants.ACTION_COPY, dlistener);
+        ds5.createDefaultDragGestureRecognizer(cliDestroyerBox, DnDConstants.ACTION_COPY, dlistener);        
         //end drag and drop code
         
         header.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
@@ -354,7 +356,20 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			userEnteredIP.setEditable(false);
 			while(true){
 				Object input = ois.readObject();
-				textBox.setText(textBox.getText()+Game.getHostPlayer()+": "+(String)input+"\n");
+				String text = input.toString();
+				if(text.startsWith("#!")){
+					text = text.substring(2);
+					System.out.println(text);
+					//if(text == "READY"){
+						game.hostReady = true;
+					//}else{
+						textBox.setText(textBox.getText()+text+"\n");	
+						//text="";
+					//}
+				}else{
+					textBox.setText(textBox.getText()+Game.getHostPlayer()+": "+(String)input+"\n");	
+				}
+				
 			}
 		}catch (IOException e){
 			e.printStackTrace();
@@ -363,20 +378,20 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		}
 		
 	}
-    static public void disableCarrierBox(){
-    	carrierBox.setEnabled(false);
+    static public void disableClientCarrierBox(){
+    	cliCarrierBox.setEnabled(false);
     }
-    static public void disableBattleshipBox(){
-    	battleshipBox.setEnabled(false);
+    static public void disableClientBattleshipBox(){
+    	cliBattleshipBox.setEnabled(false);
     }
-    static public void disableCruiserBox(){
-    	cruiserBox.setEnabled(false);
+    static public void disableClientCruiserBox(){
+    	cliCruiserBox.setEnabled(false);
     }
-    static public void disableSubBox(){
-    	subBox.setEnabled(false);
+    static public void disableClientSubBox(){
+    	cliSubBox.setEnabled(false);
     }
-    static public void disableDestroyerBox(){
-    	destroyerBox.setEnabled(false);
+    static public void disableClientDestroyerBox(){
+    	cliDestroyerBox.setEnabled(false);
     }
     static public void displayText(String text){
     	textBox.setText(textBox.getText()+text+"\n");
@@ -394,6 +409,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	public void actionPerformed(ActionEvent ae) {
     	if (ae.getActionCommand().equals("Connect")){
 			IP = userEnteredIP.getText();		
+			beginGame.setEnabled(true);
 		}else if (ae.getActionCommand().equals("Send")){
 			try{
 				oos.writeObject(chatInput.getText());
@@ -408,8 +424,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 				textBox.setText(textBox.getText()+"Please place your ships first\n");
 			}else{
 				beginGame.setEnabled(false);
-				Game.playGame(shipMenu);
-				
+				Game.playGame(textBox,shipMenu);
 			}
 			
 		}

@@ -75,7 +75,9 @@ public class Grid extends JFrame {
 
 				private void setCurrentSquare(Square square) {
 					if (which == 0){
-						textArea.setText(textArea.getText() + "Shoot at " + xCord + " " + yCord + "\n");
+						game.shootInfo="#!";
+						game.shootInfo = game.shootInfo + xCord+yCord;
+						textArea.setText(textArea.getText() +game.shootInfo + "\n");
 					}
 				}
 	            } // end anonymous inner class
