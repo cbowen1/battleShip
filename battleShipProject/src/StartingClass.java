@@ -22,17 +22,9 @@ public class StartingClass implements ActionListener {
 		Constants.myGrid = new char[10][10];
 		for(int i=0;i<10;i++){
 			for(int j=0;j<10;j++){
-				Constants.myGrid[i][j]='E';
+				Constants.myGrid[i][j]='-';
 			}
 		}
-		
-		for(int i=0;i<10;i++){
-			for(int j=0;j<10;j++){
-				//System.out.print(Constants.myGrid[i][j]);
-			}
-			System.out.println();
-		}
-		
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {

@@ -9,5 +9,11 @@ public class Constants {
 	public static final String SUBMARINE = "src/img/ships/sub.png";
 	public static final String DESTROYER = "src/img/ships/destroyer.png";
 	
+	public static final String CARRIERVERT = "src/img/ships/carrierVert.png";
+	public static final String BATTLESHIPVERT = "src/img/ships/battleshipVert.png";
+	public static final String CRUISERVERT = "src/img/ships/cruiserVert.png";
+	public static final String SUBMARINEVERT = "src/img/ships/subVert.png";
+	public static final String DESTROYERVERT = "src/img/ships/destroyerVert.png";
+	
 	public static char[][] myGrid;
 }

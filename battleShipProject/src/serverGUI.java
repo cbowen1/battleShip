@@ -7,6 +7,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,9 +25,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
 
-public class serverGUI extends JFrame implements Runnable, ActionListener {
+public class serverGUI extends JFrame implements Runnable, ActionListener,KeyListener {
 
     private JPanel header;
     private JTextField userEnteredIP;
@@ -52,11 +55,15 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
     private JLabel subBox;
     private JLabel destroyerBox;
     
+    private JButton beginGame;
+    
 	Ship carrier;
 	Ship battleship;
 	Ship cruiser;
 	Ship submarine;
 	Ship destroyer;
+	
+	game Game;
 	
     public serverGUI() {
         try {
@@ -82,8 +89,25 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
     }
                        
     private void initComponents() {
+    	Game = new game();
+    	
+    	Game.setGuestPlayer("Cale");
+    	Game.setHostPlayer("Ryan");
+    	
+    	beginGame = new JButton();
+    	beginGame.setText("Play");
     	shipMenu = new JPanel();
-    	smallGrid = new JPanel();
+        smallGrid = new JPanel(){
+        	Image image = Toolkit.getDefaultToolkit().getImage(Constants.GRID);
+            public void paintComponent( Graphics g )
+            {
+                 super.paintComponent(g);
+                 g.drawImage( image, 0, 0, this );
+            }	
+        };
+        setFocusable(true);
+        addKeyListener(this);
+        
         mainBoard = new JPanel();
         secondaryDisp = new JPanel();
         header = new JPanel(){
@@ -95,11 +119,11 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
             }	
         };
         
-        carrier = new Ship("Carrier",Constants.CARRIER,150,50);
-        battleship = new Ship("Battleship",Constants.BATTLESHIP,125,50);
-        cruiser = new Ship("Cruiser",Constants.CRUISER,100,50);
-        submarine = new Ship("Submarine",Constants.SUBMARINE,100,50);
-        destroyer = new Ship("Destroyer",Constants.DESTROYER,100,50);
+        carrier = new Ship("Carrier",Constants.CARRIER);
+        battleship = new Ship("Battleship",Constants.BATTLESHIP);
+        cruiser = new Ship("Cruiser",Constants.CRUISER);
+        submarine = new Ship("Submarine",Constants.SUBMARINE);
+        destroyer = new Ship("Destroyer",Constants.DESTROYER);
         
         jPanel2 = new JPanel();
         jScrollPane2 = new JScrollPane();
@@ -108,7 +132,6 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
         connectBtn = new JButton();
         userEnteredIP = new JTextField();
         chatInput = new JTextField();
-
         connectBtn.setVisible(false);
         
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -123,8 +146,8 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
         
         secondaryDisp.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         secondaryDisp.setPreferredSize(new Dimension(200, 200));
+        smallGrid.setBorder(new LineBorder(Color.BLACK));
         
-        smallGrid.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         javax.swing.GroupLayout smallGridLayout = new javax.swing.GroupLayout(smallGrid);
         smallGrid.setLayout(smallGridLayout);
         smallGridLayout.setHorizontalGroup(
@@ -135,11 +158,11 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
             smallGridLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        
-        shipMenu.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        //This section shows the ships that can be dragged into the users grid
+        shipMenu.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         shipMenu.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
         
+        GridBagConstraints gbc = new GridBagConstraints();
         carrierBox = new JLabel(carrier.getImg(),JLabel.CENTER);
         battleshipBox = new JLabel(battleship.getImg(),JLabel.CENTER);
         cruiserBox = new JLabel(cruiser.getImg(),JLabel.CENTER);
@@ -154,14 +177,18 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
         gbc.gridy = 1;
         shipMenu.add(battleshipBox,gbc);
         
-        gbc.gridy++;
+        gbc.gridy = 3;
         shipMenu.add(cruiserBox,gbc);
         
-        gbc.gridy++;
+        gbc.gridy = 5;
         shipMenu.add(subBox,gbc);
         
-        gbc.gridy++;
+        gbc.gridy = 7;
         shipMenu.add(destroyerBox,gbc);
+        
+        beginGame.addActionListener(this);
+        gbc.gridy = 9;
+        shipMenu.add(beginGame,gbc);
         
         javax.swing.GroupLayout scoreLayout = new javax.swing.GroupLayout(secondaryDisp);
         secondaryDisp.setLayout(scoreLayout);
@@ -183,8 +210,8 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
                     .addComponent(smallGrid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        
-        new Grid(smallGrid,textBox,30,1);
+        new MyDropTargetListener(smallGrid);
+        smallGrid.setPreferredSize(new Dimension(325,325));
         
         header.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
 
@@ -317,6 +344,24 @@ public class serverGUI extends JFrame implements Runnable, ActionListener {
 				e.printStackTrace();
 			}
 		}
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }

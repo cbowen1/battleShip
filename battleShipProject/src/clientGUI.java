@@ -9,6 +9,8 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -30,7 +32,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.SoftBevelBorder;
 
-public class clientGUI extends JFrame implements Runnable, ActionListener {
+public class clientGUI extends JFrame implements Runnable, ActionListener,KeyListener {
 
     private JPanel header;
     private JTextField userEnteredIP;
@@ -38,22 +40,24 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
     private JButton connectBtn;
     private JPanel jPanel2;
     private JScrollPane jScrollPane2;
-    private JTextArea textBox;
+    private static JTextArea textBox;
     private JTextField chatInput;
     private JPanel mainBoard;
     private JPanel secondaryDisp;
+    
     private String IP;
+    
     private JPanel shipMenu;
     private JPanel smallGrid;
     
-    private JLabel carrierBox;
-    private JLabel battleshipBox;
-    private JLabel cruiserBox;
-    private JLabel subBox;
-    private JLabel destroyerBox;
+    private static JLabel carrierBox;
+    private static JLabel battleshipBox;
+    private static JLabel cruiserBox;
+    private static JLabel subBox;
+    private static JLabel destroyerBox;
     
     private JButton beginGame;
-    
+
 	Ship carrier;
 	Ship battleship;
 	Ship cruiser;
@@ -64,7 +68,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
 	
 	private Socket Socket;
 	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
+	public static ObjectOutputStream oos;
     
     public clientGUI() {
         try {
@@ -90,9 +94,10 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
                        
     private void initComponents() {
     	Game = new game();
+    	
     	//test code for displaying the name::
-    	Game.setGuestPlayer("cale");
-    	Game.setHostPlayer("HOST NAME");
+    	Game.setGuestPlayer("Cale");
+    	Game.setHostPlayer("Ryan");
     	
     	beginGame = new JButton();
     	beginGame.setText("Play");
@@ -108,17 +113,14 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         };
         shipMenu = new JPanel();
         
-        carrier = new Ship("Carrier",Constants.CARRIER,150,50);
-        battleship = new Ship("Battleship",Constants.BATTLESHIP,125,50);
-        cruiser = new Ship("Cruiser",Constants.CRUISER,100,50);
-        submarine = new Ship("Submarine",Constants.SUBMARINE,100,50);
-        destroyer = new Ship("Destroyer",Constants.DESTROYER,100,50);
+        setFocusable(true);
+        addKeyListener(this);
         
-        carrier.setSize(5);
-        battleship.setSize(4);
-        cruiser.setSize(3);
-        submarine.setSize(3);
-        destroyer.setSize(2);
+        carrier = new Ship("Carrier",Constants.CARRIER);
+        battleship = new Ship("Battleship",Constants.BATTLESHIP);
+        cruiser = new Ship("Cruiser",Constants.CRUISER);
+        submarine = new Ship("Submarine",Constants.SUBMARINE);
+        destroyer = new Ship("Destroyer",Constants.DESTROYER);
         
         header = new JPanel(){
         	Image image = Toolkit.getDefaultToolkit().getImage(Constants.HEADER);
@@ -147,8 +149,8 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         
         secondaryDisp.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         secondaryDisp.setPreferredSize(new Dimension(200, 200));
+        
         smallGrid.setBorder(new LineBorder(Color.BLACK));
-        //smallGrid.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         javax.swing.GroupLayout smallGridLayout = new javax.swing.GroupLayout(smallGrid);
         smallGrid.setLayout(smallGridLayout);
         smallGridLayout.setHorizontalGroup(
@@ -162,8 +164,8 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         //This section shows the ships that can be dragged onto the users grid
         shipMenu.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         shipMenu.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
         
+        GridBagConstraints gbc = new GridBagConstraints();        
         carrierBox = new JLabel(carrier.getImg(),JLabel.CENTER);
         battleshipBox = new JLabel(battleship.getImg(),JLabel.CENTER);
         cruiserBox = new JLabel(cruiser.getImg(),JLabel.CENTER);
@@ -173,7 +175,6 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
-        //gbc.gridheight = 2;
         shipMenu.add(carrierBox,gbc);
     
         gbc.gridy = 1;
@@ -212,14 +213,13 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
                     .addComponent(smallGrid, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+        
         new MyDropTargetListener(smallGrid);
         smallGrid.setPreferredSize(new Dimension(325,325));
         smallGrid.setMinimumSize(new Dimension(325,325));
         smallGrid.setMaximumSize(new Dimension(325,325));
-       
         smallGrid.setLayout(null);
         
-
         //begin code to make drag and drop work
         MyDragGestureListener dlistener = new MyDragGestureListener();
         DragSource ds1 = new DragSource();
@@ -236,7 +236,6 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
         //end drag and drop code
         
         header.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
-
         GroupLayout headerLayout = new GroupLayout(header);
         header.setLayout(headerLayout);
         headerLayout.setHorizontalGroup(
@@ -352,9 +351,10 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
 			oos = new ObjectOutputStream(Socket.getOutputStream());
 			ois = new ObjectInputStream(Socket.getInputStream());
 			connectBtn.setEnabled(false);
+			userEnteredIP.setEditable(false);
 			while(true){
 				Object input = ois.readObject();
-				textBox.setText(textBox.getText()+"Host says: "+(String)input+"\n");
+				textBox.setText(textBox.getText()+Game.getHostPlayer()+": "+(String)input+"\n");
 			}
 		}catch (IOException e){
 			e.printStackTrace();
@@ -363,7 +363,33 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
 		}
 		
 	}
-
+    static public void disableCarrierBox(){
+    	carrierBox.setEnabled(false);
+    }
+    static public void disableBattleshipBox(){
+    	battleshipBox.setEnabled(false);
+    }
+    static public void disableCruiserBox(){
+    	cruiserBox.setEnabled(false);
+    }
+    static public void disableSubBox(){
+    	subBox.setEnabled(false);
+    }
+    static public void disableDestroyerBox(){
+    	destroyerBox.setEnabled(false);
+    }
+    static public void displayText(String text){
+    	textBox.setText(textBox.getText()+text+"\n");
+    }
+    
+    static public void sendMessage(String text){
+    	try {
+			oos.writeObject(text);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
 	@Override
 	public void actionPerformed(ActionEvent ae) {
     	if (ae.getActionCommand().equals("Connect")){
@@ -371,7 +397,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
 		}else if (ae.getActionCommand().equals("Send")){
 			try{
 				oos.writeObject(chatInput.getText());
-				textBox.setText(textBox.getText()+"You Say: "+ chatInput.getText()+"\n");
+				textBox.setText(textBox.getText()+Game.getGuestPlayer() +": "+ chatInput.getText()+"\n");
 				chatInput.setText("");
 			} catch(IOException e){
 				e.printStackTrace();
@@ -382,11 +408,34 @@ public class clientGUI extends JFrame implements Runnable, ActionListener {
 				textBox.setText(textBox.getText()+"Please place your ships first\n");
 			}else{
 				beginGame.setEnabled(false);
-				Game.playGame(textBox);
+				Game.playGame(shipMenu);
 				
 			}
 			
 		}
 		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()){
+		case KeyEvent.VK_UP:
+			Ship.setOrientation('v');
+			textBox.setText(textBox.getText()+"Place your ship VERTICALLY"+"\n");
+			break;
+		case KeyEvent.VK_DOWN:
+			Ship.setOrientation('h');
+			textBox.setText(textBox.getText()+"Place your ship HORIZONTALLY"+"\n");
+			break;
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {	
 	}
 }

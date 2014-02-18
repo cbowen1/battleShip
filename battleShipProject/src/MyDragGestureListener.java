@@ -14,14 +14,14 @@ import javax.swing.JLabel;
 	    public void dragGestureRecognized(DragGestureEvent event) {
 	        JLabel label = (JLabel) event.getComponent();
 	        final Icon ico = label.getIcon();
-
+	        
 
 	        Transferable transferable = new Transferable() {
 	            @Override
 	            public DataFlavor[] getTransferDataFlavors() {
 	                return new DataFlavor[]{DataFlavor.imageFlavor};
 	            }
-
+	            
 	            @Override
 	            public boolean isDataFlavorSupported(DataFlavor flavor) {
 	                if (!isDataFlavorSupported(flavor)) {
