@@ -367,14 +367,16 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 					if(text.equals("READY")){
 						game.hostReady = true;
 						textBox.setText(textBox.getText()+Game.getHostPlayer()+" is ready.\n");
+					}else if(text.equals("GAMEOVER")){
+						game.gameOver = true;
 					}else{
-						textBox.setText(textBox.getText()+"SYS MSG:: "+text+"\n");	
+						textBox.setText(textBox.getText()+"SYS MSG:: "+text+"\n");
 						textBox.setText(textBox.getText()+"do functions "+text+"\n");	
 						game.serverTurn = false;
 						game.guestTurn = true;
 					}
 				}else{
-					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	
+					textBox.setText(textBox.getText()+Game.getHostPlayer()+": "+(String)input+"\n");	
 				}	
 				
 			}

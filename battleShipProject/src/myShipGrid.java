@@ -50,5 +50,14 @@ public class myShipGrid {
 			System.out.println();
 		}
 	}
+	
+	public static boolean checkForHit(int x,int y){
+		boolean hit = false;
+		char gridValue = Constants.myGrid[x][y];
+		if(gridValue != '-'){
+			hit = true;
+		}
+		return hit;
+	}
 }
 

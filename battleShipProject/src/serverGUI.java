@@ -357,8 +357,18 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 					if(text.equals("READY")){
 						game.guestReady = true;
 						textBox.setText(textBox.getText()+Game.getGuestPlayer()+" is ready.\n");
+					}else if(text.equals("GAMEOVER")){
+						game.gameOver = true;
 					}else{
+						int x = Character.getNumericValue(text.charAt(0));
+						int y = Character.getNumericValue(text.charAt(1));
+						if(myShipGrid.checkForHit(x, y)){
+							System.out.println("Your Oppt hit");
+						}
 						textBox.setText(textBox.getText()+"SYS MSG:: "+text+"\n");	
+						textBox.setText(textBox.getText()+"do stuff\n");
+						game.serverTurn = true;
+						game.guestTurn = false;
 					}
 				}else{
 					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	

@@ -12,16 +12,16 @@ public class game implements Runnable {
 	static boolean gameOver = false;
 	
 	/*
-	 * For shootInfo the first two slots will be the !# to tell the system this is system information
+	 * For shootInfo the first two slots will be the #! to tell the system this is system information
 	 * 	the third slot will be the x-coordinate we are attempting to shoot
 	 * 	the fourth slot will be the y-coordinate we are attempting to shoot
 	 */
 	static String shootInfo;
 	/*
-	 * For returnInfo the first two slots will be the !# to tell the system this is system information
+	 * For returnInfo the first two slots will be the #! to tell the system this is system information
 	 * 	the third slot will be either a H or a M to tell the user if it was a hit or miss respectively
 	 * 	the fourth slot will be either an E for a miss or the Char corresponding to the hit ship
-	 * 	the fifth slot will be the remaining number of hit points for that ship or an X if a miss
+	 * 	the fifth slot will be either an X for a sunken ship or O for a not sunken ship
 	 */
 	static String returnInfo;
 
@@ -75,41 +75,48 @@ public class game implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		int counter = 0;
 		serverTurn = true;
 		guestTurn = false;
-		while(!gameOver){
-			if(getRunner()=="server"){	//The server gui called the game
-				if(serverTurn){	//Our turn
-					text.setText("Choose where to attack");
-					//serverTurn = false;
-					//guestTurn = true;
-				}else{	//The opponents turn
+		
+		if(getRunner() == "server") {
+			while (!gameOver){
+				while(!serverTurn) {
+					if (gameOver) {
+						break;
+					}
+					
 					text.setText("Please wait for your opponent");
-					//serverTurn = true;
-					//guestTurn = false;
-				}
-			}else{	//the client gui called the game
-				if(guestTurn){	//The opponents turn
-					text.setText("Choose where to attack");
-					//serverTurn = false;
-					//guestTurn = true;
-				}else{ //Our turn
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} // end of serverTurn while loop
+				text.setText("Choose where to attack");
+			} // end of gameOver while loop
+		} else {
+			while (!gameOver){
+				while(!guestTurn) {
+					if (gameOver) {
+						break;
+					}
+					
 					text.setText("Please wait for your opponent");
-					//guestTurn = false;
-					//serverTurn = true;
-				}
-			}
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			counter++;
-			if(counter == 5)
-				gameOver = true;
-			
-		}	//End of the while loop to run run the game
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} // end of guestTurn while loop
+				text.setText("Choose where to attack");
+			} // end of gameOver while loop
+		}
+
 		text.setText("Game Over\nThanks for playing");
+
+		
 	}
 }
+
+
+
