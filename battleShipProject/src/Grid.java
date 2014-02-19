@@ -35,7 +35,7 @@ public class Grid extends JFrame {
 	          // create square
 	          playerGrid[ row ][ column ] = new Square( " ", row, column);
 	          playerPanel.add( playerGrid[ row ][ column ] ); // add square
-	          new MyDropTargetListener(playerGrid[row][column]);
+	          //new MyDropTargetListener(playerGrid[row][column]);
 	          
 	       } // end inner for
 	    } // end outer for
@@ -67,18 +67,38 @@ public class Grid extends JFrame {
 	                  setCurrentSquare( Square.this ); // set current square
 
 	               } // end method mouseReleased
-
+	               
+	               //is this method never used??
+/*
 				private Object getSquareLocation() {
 					Square curr = new Square(contents, xCord, yCord);
 					return curr;
 				}
-
+*/
 				private void setCurrentSquare(Square square) {
+					if(game.runner.equals("client")){
+						if(game.guestTurn){
+							game.shootInfo="#!"+xCord+yCord;
+							clientGUI.sendMessage(game.shootInfo);
+							game.shootInfo = "";
+							game.guestTurn = false;
+							game.serverTurn = true;
+						}
+					}else{	//the server is the one that is running
+						if(game.serverTurn){
+							game.shootInfo="#!"+xCord+yCord;
+							serverGUI.sendMessage(game.shootInfo);
+							game.shootInfo = "";
+							game.serverTurn = false;
+							game.guestTurn = true;
+						}
+						
+					}/*
 					if (which == 0){
 						game.shootInfo="#!";
 						game.shootInfo = game.shootInfo + xCord+yCord;
 						textArea.setText(textArea.getText() +game.shootInfo + "\n");
-					}
+					}*/
 				}
 	            } // end anonymous inner class
 	         ); // end call to addMouseListener

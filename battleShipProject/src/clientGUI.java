@@ -357,17 +357,25 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			while(true){
 				Object input = ois.readObject();
 				String text = input.toString();
+				/*
+				 * Anything that starts with #! will be considered a system message and as such
+				 * it will need to be intercepted prior to being shown to the user. It will come here
+				 * and the game logic will then be done.
+				 */
 				if(text.startsWith("#!")){
 					text = text.substring(2);
 					if(text.equals("READY")){
 						game.hostReady = true;
 						textBox.setText(textBox.getText()+Game.getHostPlayer()+" is ready.\n");
 					}else{
-						textBox.setText(textBox.getText()+text+"\n");	
+						textBox.setText(textBox.getText()+"SYS MSG:: "+text+"\n");	
+						textBox.setText(textBox.getText()+"do functions "+text+"\n");	
+						game.serverTurn = false;
+						game.guestTurn = true;
 					}
 				}else{
-					textBox.setText(textBox.getText()+Game.getHostPlayer()+": "+(String)input+"\n");	
-				}
+					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	
+				}	
 				
 			}
 		}catch (IOException e){

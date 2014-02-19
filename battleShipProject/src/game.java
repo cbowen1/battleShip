@@ -77,29 +77,27 @@ public class game implements Runnable {
 		}
 		int counter = 0;
 		serverTurn = true;
+		guestTurn = false;
 		while(!gameOver){
 			if(getRunner()=="server"){	//The server gui called the game
 				if(serverTurn){	//Our turn
-					text.setText("Server running, our turn");
-					
-					//serverGUI.sendMessage(shootInfo);
-					serverTurn = false;
-					guestTurn = true;
+					text.setText("Choose where to attack");
+					//serverTurn = false;
+					//guestTurn = true;
 				}else{	//The opponents turn
-					text.setText("Server running, other turn");
-					serverTurn = true;
-					guestTurn = false;
+					text.setText("Please wait for your opponent");
+					//serverTurn = true;
+					//guestTurn = false;
 				}
 			}else{	//the client gui called the game
-				if(serverTurn){	//The opponents turn
-					text.setText("Client running, oppnent turn");
-					serverTurn = false;
-					guestTurn = true;
+				if(guestTurn){	//The opponents turn
+					text.setText("Choose where to attack");
+					//serverTurn = false;
+					//guestTurn = true;
 				}else{ //Our turn
-					text.setText("Client running, our turn");
-					//clientGUI.sendMessage(shootInfo);
-					guestTurn = false;
-					serverTurn = true;
+					text.setText("Please wait for your opponent");
+					//guestTurn = false;
+					//serverTurn = true;
 				}
 			}
 			try {

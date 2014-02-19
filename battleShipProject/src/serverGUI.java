@@ -65,6 +65,8 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	Ship submarine;
 	Ship destroyer;
 	
+	public static Grid mainGrid;
+	
 	game Game;
 	
     public serverGUI() {
@@ -145,7 +147,8 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 
         mainBoard.setBorder(BorderFactory.createTitledBorder("Where would you like to shoot?"));
         mainBoard.setPreferredSize(new Dimension(500, 500));
-        new Grid(mainBoard,textBox,44,0);
+        mainGrid = new Grid(mainBoard,textBox,44,0);
+        new MyDropTargetListener(mainBoard);
         
         secondaryDisp.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         secondaryDisp.setPreferredSize(new Dimension(200, 200));
@@ -344,13 +347,18 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			while(true){
 				Object input = ois.readObject();
 				String text = input.toString();
+				/*
+				 * Anything that starts with #! will be considered a system message and as such
+				 * it will need to be intercepted prior to being shown to the user. It will come here
+				 * and the game logic will then be done.
+				 */
 				if(text.startsWith("#!")){
 					text = text.substring(2);
 					if(text.equals("READY")){
 						game.guestReady = true;
 						textBox.setText(textBox.getText()+Game.getGuestPlayer()+" is ready.\n");
 					}else{
-						textBox.setText(textBox.getText()+text+"\n");	
+						textBox.setText(textBox.getText()+"SYS MSG:: "+text+"\n");	
 					}
 				}else{
 					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	
@@ -396,7 +404,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
     	if (ae.getActionCommand().equals("Send")){
 			try{
 				oos.writeObject(chatInput.getText());
-				textBox.setText(textBox.getText()+Game.getHostPlayer()+":"+ chatInput.getText()+"\n");
+				textBox.setText(textBox.getText()+Game.getHostPlayer()+": "+ chatInput.getText()+"\n");
 				chatInput.setText("");
 			} catch(IOException e){
 				e.printStackTrace();
