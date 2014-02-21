@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -19,6 +21,8 @@ import java.net.Socket;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -64,8 +68,6 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	Ship cruiser;
 	Ship submarine;
 	Ship destroyer;
-	
-	public static Grid mainGrid;
 	
 	game Game;
 	
@@ -113,7 +115,16 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
         setFocusable(true);
         addKeyListener(this);
         
-        mainBoard = new JPanel();
+		mainBoard = new JPanel(){
+			Image image = Toolkit.getDefaultToolkit().getImage(Constants.BIGGRID);
+			public void paintComponent( Graphics g )
+			{
+				super.paintComponent(g);
+				g.drawImage( image, 20, 24, this );
+			}	
+		};
+		
+		mainBoard.setLayout(null);
         secondaryDisp = new JPanel();
         header = new JPanel(){
         	Image image = Toolkit.getDefaultToolkit().getImage(Constants.HEADER);
@@ -141,14 +152,34 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
         
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(1080, 800));
-        setTitle("Battleship v 1.01");
+        setTitle("SERVER v 1.01");
         setResizable(false);
         textBox.setEditable(false);
 
         mainBoard.setBorder(BorderFactory.createTitledBorder("Where would you like to shoot?"));
-        mainBoard.setPreferredSize(new Dimension(500, 500));
+		mainBoard.setPreferredSize(new Dimension(500, 500));
+		mainBoard.setMinimumSize(new Dimension(500, 500));
+		mainBoard.setMaximumSize(new Dimension(500, 500));
+        /*
         mainGrid = new Grid(mainBoard,textBox,44,0);
         new MyDropTargetListener(mainBoard);
+        */
+		mainBoard.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e){
+				int x = e.getX();
+				int y = e.getY();
+				x = myShipGrid.mainXpoint(x);
+				y = myShipGrid.mainXpoint(y-4);
+				if(game.serverTurn){
+					game.shootInfo="#!"+x+y;
+					serverGUI.sendMessage(game.shootInfo);
+					game.shootInfo = "";
+					game.serverTurn = false;
+					game.guestTurn = true;
+				}
+			}
+		});
         
         secondaryDisp.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
         secondaryDisp.setPreferredSize(new Dimension(200, 200));
@@ -360,13 +391,27 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 					}else if(text.equals("GAMEOVER")){
 						game.gameOver = true;
 					}else{
+						if(text.charAt(0)=='H'||text.charAt(0)=='M'){
+							System.out.println("**********HitMissReceieved*********");
+							//paintHit();
+						}
 						int x = Character.getNumericValue(text.charAt(0));
 						int y = Character.getNumericValue(text.charAt(1));
 						if(myShipGrid.checkForHit(x, y)){
-							System.out.println("Your Oppt hit");
+							placePeg('h',x,y);
+							game.totalHitPoints--;
+							char value = Constants.myGrid[x][y];
+							game.returnInfo = "#!H"+value;
+							if(game.checkForSunk(value)){
+								game.returnInfo = game.returnInfo+"X";
+							}else{
+								game.returnInfo = game.returnInfo+"O";
+							}
+						}else{
+							placePeg('m',x,y);
 						}
-						textBox.setText(textBox.getText()+"SYS MSG:: "+text+"\n");	
-						textBox.setText(textBox.getText()+"do stuff\n");
+						
+						
 						game.serverTurn = true;
 						game.guestTurn = false;
 					}
@@ -382,7 +427,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		
 	}
 
-    static public void disableCarrierBox(){
+	static public void disableCarrierBox(){
     	carrierBox.setEnabled(false);
     }
     static public void disableBattleshipBox(){
@@ -444,6 +489,31 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			break;
 		}
 		
+	}
+	private void placePeg(char s, int x, int y) {
+		Icon ico;
+		if(s == 'h'){
+			ico = (Icon) new ImageIcon(Constants.REDPEG);
+		}else{
+			ico = (Icon) new ImageIcon(Constants.WHITEPEG);
+		}
+		int z = myShipGrid.getXPx(x);
+		int w = myShipGrid.getYPx(y);
+		JLabel peg = new JLabel(ico);
+		peg.setBounds(z, w, ico.getIconWidth(), ico.getIconHeight());
+		smallGrid.add(peg,0);
+		smallGrid.revalidate();
+		smallGrid.repaint();
+	}
+	
+
+    private void paintHit() {
+		Icon ico = (Icon) new ImageIcon(Constants.REDPEG);
+		JLabel hit = new JLabel(ico);
+		hit.setBounds(100,100,ico.getIconWidth(),ico.getIconHeight());
+		mainBoard.add(hit,0);
+		mainBoard.revalidate();
+		mainBoard.repaint();
 	}
 
 	@Override

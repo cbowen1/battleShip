@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
@@ -20,6 +21,8 @@ import java.net.Socket;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -102,7 +105,15 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 
 		beginGame = new JButton();
 		beginGame.setText("Play");
-		mainBoard = new JPanel();
+		mainBoard = new JPanel(){
+			Image image = Toolkit.getDefaultToolkit().getImage(Constants.BIGGRID);
+			public void paintComponent( Graphics g )
+			{
+				super.paintComponent(g);
+				g.drawImage( image, 20, 24, this );
+			}	
+		};
+		mainBoard.setLayout(null);
 		secondaryDisp = new JPanel();
 		smallGrid = new JPanel(){
 			Image image = Toolkit.getDefaultToolkit().getImage(Constants.GRID);
@@ -146,7 +157,26 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 
 		mainBoard.setBorder(BorderFactory.createTitledBorder("Where would you like to shoot?"));
 		mainBoard.setPreferredSize(new Dimension(500, 500));
-		new Grid(mainBoard,textBox,44,0);
+		mainBoard.setMinimumSize(new Dimension(500, 500));
+		mainBoard.setMaximumSize(new Dimension(500, 500));
+		mainBoard.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e){
+				int x = e.getX();
+				int y = e.getY();
+				x = myShipGrid.mainXpoint(x);
+				y = myShipGrid.mainXpoint(y-4);
+					if(game.guestTurn){
+						game.shootInfo="#!"+x;
+						game.shootInfo+=y;
+						System.out.println("IN CLIENT MOUSE CLKD"+game.shootInfo);
+						clientGUI.sendMessage(game.shootInfo);
+						game.shootInfo = "";
+						game.guestTurn = false;
+						game.serverTurn = true;
+					}
+			}
+		});
 
 		secondaryDisp.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
 		secondaryDisp.setPreferredSize(new Dimension(200, 200));
@@ -370,15 +400,33 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 					}else if(text.equals("GAMEOVER")){
 						game.gameOver = true;
 					}else{
-						int x = Character.getNumericValue(text.charAt(0));
-						int y = Character.getNumericValue(text.charAt(1));
-						if(myShipGrid.checkForHit(x, y)){
-							System.out.println("Your Oppt hit");
+						if(text.charAt(0)=='H'||text.charAt(0)=='M'){
+							//paintHit();
+							System.out.println("CLIENT HIT/MISS THE SERVER");
+						}else{
+							int y = Character.getNumericValue(text.charAt(0));
+							int x = Character.getNumericValue(text.charAt(1));
+							if(myShipGrid.checkForHit(y, x)){
+								placePeg('h',y,x);
+								game.totalHitPoints--;
+								char value = Constants.myGrid[x][y];
+								game.returnInfo = "#!H"+value;
+								
+								if(game.checkForSunk(value)){
+									game.returnInfo = game.returnInfo+"X";
+								}else{
+									//game.returnInfo.concat("O");
+									game.returnInfo = game.returnInfo+"O";
+								}
+								System.out.println("client******value: "+game.returnInfo);
+							}else{
+								placePeg('m',y,x);
+							}
+							game.returnInfo="";
+							game.serverTurn = false;
+							game.guestTurn = true;	
 						}
-						textBox.setText(textBox.getText()+"SYS MSG:: "+text+"\n");	
-						textBox.setText(textBox.getText()+"do functions "+text+"\n");
-						game.serverTurn = false;
-						game.guestTurn = true;
+						
 					}
 				}else{
 					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	
@@ -392,6 +440,24 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		}
 
 	}
+	private void placePeg(char s, int x, int y) {
+//		System.out.println("client place peg:"+ x + y);
+		Icon ico;
+		if(s == 'h'){
+			ico = (Icon) new ImageIcon(Constants.REDPEG);
+		}else{
+			ico = (Icon) new ImageIcon(Constants.WHITEPEG);
+		}
+		int z = myShipGrid.getXPx(x);
+		int w = myShipGrid.getYPx(y);
+		JLabel peg = new JLabel(ico);
+		peg.setBounds(z, w, ico.getIconWidth(), ico.getIconHeight());
+		smallGrid.add(peg, 0);
+		smallGrid.revalidate();
+		smallGrid.repaint();
+		
+	}
+
 	static public void disableClientCarrierBox(){
 		cliCarrierBox.setEnabled(false);
 	}
@@ -439,6 +505,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			}else{
 				beginGame.setEnabled(false);
 				Game.playGame(textBox,shipMenu);
+				myShipGrid.displayGrid();
 			}
 
 		}
@@ -466,6 +533,15 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 
 	@Override
 	public void keyTyped(KeyEvent e) {	
+	}
+	
+    private void paintHit() {
+		Icon ico = (Icon) new ImageIcon(Constants.REDPEG);
+		JLabel hit = new JLabel(ico);
+		hit.setBounds(100,100,ico.getIconWidth(),ico.getIconHeight());
+		mainBoard.add(hit,0);
+		mainBoard.revalidate();
+		mainBoard.repaint();
 	}
 }
 

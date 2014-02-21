@@ -11,6 +11,14 @@ public class game implements Runnable {
 	static boolean guestTurn;
 	static boolean gameOver = false;
 	
+	static int carrierHitPoints = 5;
+	static int battleshipHitPoints = 4;
+	static int cruiserHitPoints = 3;
+	static int subHitPoints = 3;
+	static int destroyerHitPoints = 2;
+	
+	static int totalHitPoints = 17;
+	
 	/*
 	 * For shootInfo the first two slots will be the #! to tell the system this is system information
 	 * 	the third slot will be the x-coordinate we are attempting to shoot
@@ -113,8 +121,39 @@ public class game implements Runnable {
 		}
 
 		text.setText("Game Over\nThanks for playing");
-
 		
+	}
+	
+	public static boolean checkForSunk(char value){
+		boolean sunk = false;
+		switch(value){
+		case 'C':
+			if(carrierHitPoints == 0){
+				sunk = true;
+			}
+			break;
+		case 'B':
+			if(battleshipHitPoints == 0){
+				sunk = true;
+			}
+			break;
+		case 'R':
+			if(cruiserHitPoints == 0){
+				sunk = true;
+			}
+			break;
+		case 'S':
+			if(subHitPoints == 0){
+				sunk = true;
+			}
+			break;
+		case 'D':
+			if(destroyerHitPoints == 0){
+				sunk = true;
+			}
+			break;
+		}
+		return sunk;
 	}
 }
 

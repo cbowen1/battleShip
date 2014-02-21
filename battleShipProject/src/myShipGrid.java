@@ -53,11 +53,83 @@ public class myShipGrid {
 	
 	public static boolean checkForHit(int x,int y){
 		boolean hit = false;
-		char gridValue = Constants.myGrid[x][y];
+		char gridValue = Constants.myGrid[y][x];
 		if(gridValue != '-'){
 			hit = true;
 		}
 		return hit;
 	}
+	public static int getXPx(int x) {
+		if(x == 9){
+			x = 292;
+		}else if(x == 8){
+			x = 262;
+		}else if(x == 7){
+			x = 230;
+		}else if(x == 6){
+			x = 196;
+		}else if(x == 5){
+			x = 168;
+		}else if(x == 4){
+			x = 130;
+		}else if(x == 3){
+			x = 96;
+		}else if(x == 2){
+			x = 64;
+		}else if(x == 1) {
+			x = 31;
+		}else{
+			x = 0;
+		}
+		return x;
+	}
+	public static int getYPx(int y) {
+		if(y == 0){
+			y = -1;
+		}else if(y == 1){
+			y = 32;
+		}else if(y == 2){
+			y = 64;
+		}else if(y == 3){
+			y = 97;
+		}else if(y == 4){
+			y = 128;
+		}else if(y == 5){
+			y = 162;
+		}else if(y == 6){
+			y = 194;
+		}else if(y == 7){
+			y = 227;
+		}else if(y == 8){
+			y = 259;
+		}else{
+			y = 292;
+		}	
+		return y;
+	}
+	
+	public static int mainXpoint(int x){
+		if(x<67){
+			x = 0;
+		}else if(x<112){
+			x = 1;
+		}else if(x<157){
+			x = 2;
+		}else if(x<203){
+			x = 3;
+		}else if(x<249){
+			x = 4;
+		}else if(x<295){
+			x = 5;
+		}else if(x<341){
+			x = 6;
+		}else if(x<387){
+			x = 7;
+		}else if(x<433){
+			x = 8;
+		}else{
+			x = 9;
+		}
+		return x;
+	}
 }
-

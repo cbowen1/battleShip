@@ -68,6 +68,7 @@ class MyDropTargetListener extends DropTargetAdapter {
 	                	if(dropPoint != null){
 	                		JLabel ship = new JLabel(ico);
 	                		ship.setBounds(dropPoint.x, dropPoint.y, ico.getIconWidth(), ico.getIconHeight());
+	                		
 	                		p.add(ship);
 	                		p.revalidate();
 	                		p.repaint();

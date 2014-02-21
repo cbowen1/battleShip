@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 public class Grid extends JFrame {
-	private Square[][] playerGrid; // board
+	private static Square[][] playerGrid; // board
 	//if which == 0 we are looking at the enemy board
 	//if which == 1 we are looking at our own board
 	private int which;
@@ -68,17 +68,11 @@ public class Grid extends JFrame {
 
 	               } // end method mouseReleased
 	               
-	               //is this method never used??
-/*
-				private Object getSquareLocation() {
-					Square curr = new Square(contents, xCord, yCord);
-					return curr;
-				}
-*/
 				private void setCurrentSquare(Square square) {
 					if(game.runner.equals("client")){
 						if(game.guestTurn){
 							game.shootInfo="#!"+xCord+yCord;
+							System.out.println(xCord + yCord);
 							clientGUI.sendMessage(game.shootInfo);
 							game.shootInfo = "";
 							game.guestTurn = false;
@@ -93,12 +87,7 @@ public class Grid extends JFrame {
 							game.guestTurn = true;
 						}
 						
-					}/*
-					if (which == 0){
-						game.shootInfo="#!";
-						game.shootInfo = game.shootInfo + xCord+yCord;
-						textArea.setText(textArea.getText() +game.shootInfo + "\n");
-					}*/
+					}
 				}
 	            } // end anonymous inner class
 	         ); // end call to addMouseListener
@@ -127,5 +116,5 @@ public class Grid extends JFrame {
 	         //g.drawString( contents, 11, 20 ); // draw mark   
 	      } // end method paintComponent
 	   } // end inner-class Square
-	
+
 }
