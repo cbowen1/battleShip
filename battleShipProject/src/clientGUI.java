@@ -60,6 +60,9 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	private static JLabel cliDestroyerBox;
 
 	private JButton beginGame;
+	
+	private int lastX;
+	private int lastY;
 
 	Ship carrier;
 	Ship battleship;
@@ -166,14 +169,28 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 				int y = e.getY();
 				x = myShipGrid.mainXpoint(x);
 				y = myShipGrid.mainXpoint(y-4);
+				
+				/*
+				 * Leave this code to allow for testing if we change the hit/miss icon
+				 */
+				/*
+				x = myShipGrid.getBIGxPx(x);
+				y = myShipGrid.getBIGyPx(y);
+				Icon ico = new ImageIcon(Constants.REDPEG);
+				JLabel testPanel = new JLabel(ico);
+				testPanel.setBounds(x, y, ico.getIconWidth(), ico.getIconHeight());
+				mainBoard.add(testPanel);
+				mainBoard.revalidate();
+				mainBoard.repaint();
+				//end of pegLoc test
+				*/
 					if(game.guestTurn){
+						lastX = x;
+						lastY = y;
 						game.shootInfo="#!"+x;
 						game.shootInfo+=y;
-						System.out.println("IN CLIENT MOUSE CLKD"+game.shootInfo);
 						clientGUI.sendMessage(game.shootInfo);
 						game.shootInfo = "";
-						game.guestTurn = false;
-						game.serverTurn = true;
 					}
 			}
 		});
@@ -401,27 +418,32 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 						game.gameOver = true;
 					}else{
 						if(text.charAt(0)=='H'||text.charAt(0)=='M'){
-							//paintHit();
-							System.out.println("CLIENT HIT/MISS THE SERVER");
+							paintHit(text);
+							game.guestTurn = false;
+							game.serverTurn = true;
 						}else{
 							int y = Character.getNumericValue(text.charAt(0));
 							int x = Character.getNumericValue(text.charAt(1));
 							if(myShipGrid.checkForHit(y, x)){
 								placePeg('h',y,x);
 								game.totalHitPoints--;
+								if(game.totalHitPoints == 0){
+									//YOU LOSE SORRY
+									sendMessage("#!GAMEOVER");
+								}
 								char value = Constants.myGrid[x][y];
 								game.returnInfo = "#!H"+value;
 								
 								if(game.checkForSunk(value)){
 									game.returnInfo = game.returnInfo+"X";
 								}else{
-									//game.returnInfo.concat("O");
 									game.returnInfo = game.returnInfo+"O";
 								}
-								System.out.println("client******value: "+game.returnInfo);
 							}else{
 								placePeg('m',y,x);
+								game.returnInfo = "#!M";
 							}
+							sendMessage(game.returnInfo);
 							game.returnInfo="";
 							game.serverTurn = false;
 							game.guestTurn = true;	
@@ -441,7 +463,6 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 
 	}
 	private void placePeg(char s, int x, int y) {
-//		System.out.println("client place peg:"+ x + y);
 		Icon ico;
 		if(s == 'h'){
 			ico = (Icon) new ImageIcon(Constants.REDPEG);
@@ -535,11 +556,44 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	public void keyTyped(KeyEvent e) {	
 	}
 	
-    private void paintHit() {
-		Icon ico = (Icon) new ImageIcon(Constants.REDPEG);
+    private void paintHit(String input) {
+    	Icon ico;
+    	char hitOrMiss = input.charAt(0);
+    	int x,y;
+    	
+    	if(hitOrMiss == 'H'){
+    		ico = new ImageIcon(Constants.REDPEG);
+        	char hitShip = input.charAt(1);
+        	char sunk = input.charAt(2);
+        	game.totalEnemyPoints--;
+        	if(sunk == 'X'){
+        		switch (hitShip){
+        		case 'C':
+        			//carrier sunk
+        			break;
+        		case 'B':
+        			//battleship sunk
+        			break;
+        		case 'R':
+        			//cruiser sunk
+        			break;
+        		case 'S':
+        			//sub sunk
+        			break;
+        		case 'D':
+        			//destroyer sunk
+        			break;
+        		}
+        	}
+    	}else{
+    		ico = new ImageIcon(Constants.WHITEPEG);
+    	}
+		x = myShipGrid.getBIGxPx(lastX);
+		y = myShipGrid.getBIGyPx(lastY);
+    	
 		JLabel hit = new JLabel(ico);
-		hit.setBounds(100,100,ico.getIconWidth(),ico.getIconHeight());
-		mainBoard.add(hit,0);
+		hit.setBounds(x,y,ico.getIconWidth(),ico.getIconHeight());
+		mainBoard.add(hit);
 		mainBoard.revalidate();
 		mainBoard.repaint();
 	}

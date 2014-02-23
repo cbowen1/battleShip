@@ -54,7 +54,7 @@ public class myShipGrid {
 	public static boolean checkForHit(int x,int y){
 		boolean hit = false;
 		char gridValue = Constants.myGrid[y][x];
-		if(gridValue != '-'){
+		if(gridValue != '-' || gridValue !='X'){
 			hit = true;
 		}
 		return hit;
@@ -131,5 +131,75 @@ public class myShipGrid {
 			x = 9;
 		}
 		return x;
+	}
+	public static int getBIGxPx(int x) {
+		switch (x){
+		case 0:
+			x = 30;
+			break;
+		case 1:
+			x = 72;
+			break;
+		case 2:
+			x = 120;
+			break;
+		case 3:
+			x = 167;
+			break;
+		case 4:
+			x = 213;
+			break;
+		case 5:
+			x = 261;
+			break;
+		case 6:
+			x = 301;
+			break;
+		case 7:
+			x = 350;
+			break;
+		case 8:
+			x = 396;
+			break;
+		case 9:
+			x = 438;
+			break;
+		}
+		return x;
+	}
+	public static int getBIGyPx(int y){
+		switch (y){
+		case 0:
+			y = 30;
+			break;
+		case 1:
+			y = 75;
+			break;
+		case 2:
+			y = 122;
+			break;
+		case 3:
+			y = 168;
+			break;
+		case 4:
+			y = 214;
+			break;
+		case 5:
+			y = 261;
+			break;
+		case 6:
+			y = 306;
+			break;
+		case 7:
+			y = 352;
+			break;
+		case 8:
+			y = 398;
+			break;
+		case 9:
+			y = 445;
+			break;
+		}
+		return y;
 	}
 }

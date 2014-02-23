@@ -63,6 +63,9 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
     
     private JButton beginGame;
     
+	private int lastX;
+	private int lastY;
+    
 	Ship carrier;
 	Ship battleship;
 	Ship cruiser;
@@ -160,10 +163,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		mainBoard.setPreferredSize(new Dimension(500, 500));
 		mainBoard.setMinimumSize(new Dimension(500, 500));
 		mainBoard.setMaximumSize(new Dimension(500, 500));
-        /*
-        mainGrid = new Grid(mainBoard,textBox,44,0);
-        new MyDropTargetListener(mainBoard);
-        */
+
 		mainBoard.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent e){
@@ -172,11 +172,13 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 				x = myShipGrid.mainXpoint(x);
 				y = myShipGrid.mainXpoint(y-4);
 				if(game.serverTurn){
-					game.shootInfo="#!"+x+y;
+					lastX = x;
+					lastY = y;
+					game.shootInfo="#!"+x;
+					game.shootInfo+=y;
 					serverGUI.sendMessage(game.shootInfo);
 					game.shootInfo = "";
-					game.serverTurn = false;
-					game.guestTurn = true;
+					
 				}
 			}
 		});
@@ -392,28 +394,39 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 						game.gameOver = true;
 					}else{
 						if(text.charAt(0)=='H'||text.charAt(0)=='M'){
-							System.out.println("**********HitMissReceieved*********");
-							//paintHit();
-						}
-						int x = Character.getNumericValue(text.charAt(0));
-						int y = Character.getNumericValue(text.charAt(1));
-						if(myShipGrid.checkForHit(x, y)){
-							placePeg('h',x,y);
-							game.totalHitPoints--;
-							char value = Constants.myGrid[x][y];
-							game.returnInfo = "#!H"+value;
-							if(game.checkForSunk(value)){
-								game.returnInfo = game.returnInfo+"X";
-							}else{
-								game.returnInfo = game.returnInfo+"O";
-							}
+							paintHit(text);
+							game.serverTurn = false;
+							game.guestTurn = true;
 						}else{
-							placePeg('m',x,y);
+							int x = Character.getNumericValue(text.charAt(0));
+							int y = Character.getNumericValue(text.charAt(1));
+							if(myShipGrid.checkForHit(x, y)){
+								Constants.myGrid[x][y] = 'X';
+								
+								myShipGrid.displayGrid();
+								placePeg('h',x,y);
+								game.totalHitPoints--;
+								if(game.totalHitPoints == 0){
+									//YOU LOSE SORRY
+									sendMessage("#!GAMEOVER");
+								}
+								char value = Constants.myGrid[x][y];
+								game.returnInfo = "#!H"+value;
+								
+								if(game.checkForSunk(value)){
+									game.returnInfo = game.returnInfo+"X";
+								}else{
+									game.returnInfo = game.returnInfo+"O";
+								}
+							}else{
+								game.returnInfo = "#!M";
+								placePeg('m',x,y);
+							}
+							sendMessage(game.returnInfo);
+							game.returnInfo = "";
+							game.serverTurn = true;
+							game.guestTurn = false;
 						}
-						
-						
-						game.serverTurn = true;
-						game.guestTurn = false;
 					}
 				}else{
 					textBox.setText(textBox.getText()+Game.getGuestPlayer()+": "+(String)input+"\n");	
@@ -505,20 +518,52 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		smallGrid.revalidate();
 		smallGrid.repaint();
 	}
-	
-
-    private void paintHit() {
-		Icon ico = (Icon) new ImageIcon(Constants.REDPEG);
-		JLabel hit = new JLabel(ico);
-		hit.setBounds(100,100,ico.getIconWidth(),ico.getIconHeight());
-		mainBoard.add(hit,0);
-		mainBoard.revalidate();
-		mainBoard.repaint();
-	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {}
 
 	@Override
 	public void keyTyped(KeyEvent e) {}
+	
+    private void paintHit(String input) {
+    	Icon ico;
+    	char hitOrMiss = input.charAt(0);
+    	int x,y;
+    	
+    	if(hitOrMiss == 'H'){
+    		ico = new ImageIcon(Constants.REDPEG);
+        	char hitShip = input.charAt(1);
+        	char sunk = input.charAt(2);
+        	game.totalEnemyPoints--;
+        	if(sunk == 'X'){
+        		switch (hitShip){
+        		case 'C':
+        			//carrier sunk
+        			break;
+        		case 'B':
+        			//battleship sunk
+        			break;
+        		case 'R':
+        			//cruiser sunk
+        			break;
+        		case 'S':
+        			//sub sunk
+        			break;
+        		case 'D':
+        			//destroyer sunk
+        			break;
+        		}
+        	}
+    	}else{
+    		ico = new ImageIcon(Constants.WHITEPEG);
+    	}
+		x = myShipGrid.getBIGxPx(lastX);
+		y = myShipGrid.getBIGyPx(lastY);
+    	
+		JLabel hit = new JLabel(ico);
+		hit.setBounds(x,y,ico.getIconWidth(),ico.getIconHeight());
+		mainBoard.add(hit);
+		mainBoard.revalidate();
+		mainBoard.repaint();
+	}
 }

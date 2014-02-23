@@ -1,3 +1,7 @@
+import java.awt.FlowLayout;
+import java.awt.Font;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -18,6 +22,7 @@ public class game implements Runnable {
 	static int destroyerHitPoints = 2;
 	
 	static int totalHitPoints = 17;
+	static int totalEnemyPoints = 17;
 	
 	/*
 	 * For shootInfo the first two slots will be the #! to tell the system this is system information
@@ -60,8 +65,6 @@ public class game implements Runnable {
 		Thread myThread = new Thread(this);
 		myThread.start();
 		text = textBox;
-		
-		
 		shipMenu.removeAll();
 		shipMenu.repaint();
 	}
