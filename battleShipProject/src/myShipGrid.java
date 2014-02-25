@@ -69,7 +69,7 @@ public class myShipGrid {
 		}else if(x == 6){
 			x = 196;
 		}else if(x == 5){
-			x = 168;
+			x = 160;
 		}else if(x == 4){
 			x = 130;
 		}else if(x == 3){
@@ -150,7 +150,7 @@ public class myShipGrid {
 			x = 213;
 			break;
 		case 5:
-			x = 261;
+			x = 258;
 			break;
 		case 6:
 			x = 301;

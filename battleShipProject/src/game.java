@@ -71,9 +71,8 @@ public class game implements Runnable {
 			clientGUI.createScorePanel();
 		}else{
 			serverGUI.createScorePanel();
-			shipMenu.removeAll();
-			shipMenu.repaint();
 		}
+		myShipGrid.displayGrid();
 	}
 
 	@Override
@@ -118,7 +117,6 @@ public class game implements Runnable {
 					if (gameOver) {
 						break;
 					}
-					
 					text.setText("Please wait for your opponent");
 					try {
 						Thread.sleep(500);
