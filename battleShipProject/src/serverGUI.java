@@ -1,6 +1,9 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -13,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -52,7 +56,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	private ObjectInputStream ois;
 	private static ObjectOutputStream oos;
 	
-    private JPanel shipMenu;
+    private static JPanel shipMenu;
     private JPanel smallGrid;	
     
     private static JLabel carrierBox;
@@ -73,6 +77,11 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	Ship destroyer;
 	
 	game Game;
+	
+	public static ImageIcon scoreBox = null;
+	static JLabel scoreLabel;
+	public static JLabel enemyHitPoints;
+	public static JLabel yourHitPoints;
 	
     public serverGUI() {
         try {
@@ -566,4 +575,45 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		mainBoard.revalidate();
 		mainBoard.repaint();
 	}
+    
+    static public void createScorePanel(){
+    	shipMenu.removeAll();
+    	scoreBox = new ImageIcon(Constants.SCOREBOX);
+    	scoreLabel = new JLabel(scoreBox);
+    	scoreLabel.setBounds(0, 0, scoreBox.getIconWidth(), scoreBox.getIconHeight());
+    	shipMenu.add(scoreLabel);
+    	shipMenu.revalidate();
+    	shipMenu.repaint();
+    	enemyHitPoints = new JLabel();
+    	yourHitPoints = new JLabel();
+    	
+    	enemyHitPoints.setBounds(140, 115, 200, 30);
+    	yourHitPoints.setBounds(140, 150, 200, 30);
+    	shipMenu.setLayout(null);
+    	shipMenu.add(enemyHitPoints,0);
+    	shipMenu.add(yourHitPoints,1);
+    	
+    	//This allows us to use our own font to keep everything similar looking
+    	Font myFont = null;
+    	File fontFile = new File(Constants.FONT);
+    	try {
+			myFont = Font.createFont(Font.TRUETYPE_FONT, fontFile).
+					deriveFont(Font.PLAIN,22f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	ge.registerFont(myFont);
+    	enemyHitPoints.setFont(myFont);
+    	yourHitPoints.setFont(myFont);
+    	setScore();
+    }
+    static private void setScore(){
+    	enemyHitPoints.setText(Integer.toString(game.totalEnemyPoints));
+    	yourHitPoints.setText(Integer.toString(game.totalHitPoints));
+    }
 }

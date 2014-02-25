@@ -1,10 +1,12 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragSource;
@@ -14,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -50,7 +53,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 
 	private String IP;
 
-	private JPanel shipMenu;
+	private static JPanel shipMenu;
 	private JPanel smallGrid;
 
 	private static JLabel cliCarrierBox;
@@ -71,7 +74,12 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	Ship destroyer;
 
 	game Game;
-
+	
+	public static ImageIcon scoreBox = null;
+	static JLabel scoreLabel;
+	public static JLabel enemyHitPoints;
+	public static JLabel yourHitPoints;
+	
 	private Socket Socket;
 	private ObjectInputStream ois;
 	public static ObjectOutputStream oos;
@@ -101,11 +109,10 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	private void initComponents() {
 		Game = new game();
 		Game.setRunner("client");
-
+		//this.getContentPane().setBackground(Color.white);
 		//test code for displaying the name::
 		Game.setGuestPlayer("Cale");
 		Game.setHostPlayer("Ryan");
-
 		beginGame = new JButton();
 		beginGame.setText("Play");
 		mainBoard = new JPanel(){
@@ -118,6 +125,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		};
 		mainBoard.setLayout(null);
 		secondaryDisp = new JPanel();
+		//secondaryDisp.setBackground(Color.black);
 		smallGrid = new JPanel(){
 			Image image = Toolkit.getDefaultToolkit().getImage(Constants.GRID);
 			public void paintComponent( Graphics g )
@@ -127,7 +135,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			}	
 		};
 		shipMenu = new JPanel();
-
+		
 		setFocusable(true);
 		addKeyListener(this);
 
@@ -184,6 +192,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 				mainBoard.repaint();
 				//end of pegLoc test
 				*/
+				
 					if(game.guestTurn){
 						lastX = x;
 						lastY = y;
@@ -192,6 +201,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 						clientGUI.sendMessage(game.shootInfo);
 						game.shootInfo = "";
 					}
+					
 			}
 		});
 
@@ -240,6 +250,8 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		beginGame.addActionListener(this);
 		gbc.gridy = 9;
 		shipMenu.add(beginGame,gbc);
+		
+		
 		beginGame.setEnabled(false);
 
 		javax.swing.GroupLayout scoreLayout = new javax.swing.GroupLayout(secondaryDisp);
@@ -427,6 +439,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 							if(myShipGrid.checkForHit(y, x)){
 								placePeg('h',y,x);
 								game.totalHitPoints--;
+								setScore();
 								if(game.totalHitPoints == 0){
 									//YOU LOSE SORRY
 									sendMessage("#!GAMEOVER");
@@ -535,6 +548,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		System.out.println(e.getKeyCode());
 		switch (e.getKeyCode()){
 		case KeyEvent.VK_UP:
 			Ship.setOrientation('v');
@@ -566,6 +580,7 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
         	char hitShip = input.charAt(1);
         	char sunk = input.charAt(2);
         	game.totalEnemyPoints--;
+        	setScore();
         	if(sunk == 'X'){
         		switch (hitShip){
         		case 'C':
@@ -597,6 +612,47 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 		mainBoard.revalidate();
 		mainBoard.repaint();
 	}
+    
+    static public void createScorePanel(){
+    	shipMenu.removeAll();
+    	scoreBox = new ImageIcon(Constants.SCOREBOX);
+    	scoreLabel = new JLabel(scoreBox);
+    	scoreLabel.setBounds(0, 0, scoreBox.getIconWidth(), scoreBox.getIconHeight());
+    	shipMenu.add(scoreLabel);
+    	shipMenu.revalidate();
+    	shipMenu.repaint();
+    	enemyHitPoints = new JLabel();
+    	yourHitPoints = new JLabel();
+    	
+    	enemyHitPoints.setBounds(140, 115, 200, 30);
+    	yourHitPoints.setBounds(140, 150, 200, 30);
+    	shipMenu.setLayout(null);
+    	shipMenu.add(enemyHitPoints,0);
+    	shipMenu.add(yourHitPoints,1);
+    	
+    	//This allows us to use our own font to keep everything similar looking
+    	Font myFont = null;
+    	File fontFile = new File(Constants.FONT);
+    	try {
+			myFont = Font.createFont(Font.TRUETYPE_FONT, fontFile).
+					deriveFont(Font.PLAIN,22f);
+		} catch (FontFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	ge.registerFont(myFont);
+    	enemyHitPoints.setFont(myFont);
+    	yourHitPoints.setFont(myFont);
+    	setScore();
+    }
+    static private void setScore(){
+    	enemyHitPoints.setText(Integer.toString(game.totalEnemyPoints));
+    	yourHitPoints.setText(Integer.toString(game.totalHitPoints));
+    }
 }
 
 

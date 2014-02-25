@@ -52,10 +52,10 @@ public class myShipGrid {
 	}
 	
 	public static boolean checkForHit(int x,int y){
-		boolean hit = false;
+		boolean hit = true;
 		char gridValue = Constants.myGrid[y][x];
-		if(gridValue != '-' || gridValue !='X'){
-			hit = true;
+		if(gridValue == '-' || gridValue == 'X'){
+			hit = false;
 		}
 		return hit;
 	}

@@ -1,6 +1,7 @@
 import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -65,8 +66,14 @@ public class game implements Runnable {
 		Thread myThread = new Thread(this);
 		myThread.start();
 		text = textBox;
-		shipMenu.removeAll();
-		shipMenu.repaint();
+		
+		if(getRunner()=="client"){
+			clientGUI.createScorePanel();
+		}else{
+			serverGUI.createScorePanel();
+			shipMenu.removeAll();
+			shipMenu.repaint();
+		}
 	}
 
 	@Override
