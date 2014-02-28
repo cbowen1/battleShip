@@ -34,9 +34,9 @@ public class myShipGrid {
 		}
 		if(!check){
 			if(game.runner=="client"){
-				clientGUI.displayText("Error:Ship Overlap Error");	
+				clientGUI.displayText("Ship Overlap Error");	
 			}else{
-				serverGUI.displayText("Error:Ship Overlap Error");
+				serverGUI.displayText("Ship Overlap Error");
 			}
 			
 		}

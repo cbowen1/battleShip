@@ -1,8 +1,11 @@
-import java.awt.FlowLayout;
-import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -10,8 +13,8 @@ import javax.swing.JTextArea;
 public class game implements Runnable {
 	static boolean hostReady = false;
 	static boolean guestReady = false;
-	String hostPlayer;
-	String guestPlayer;
+	String hostPlayer = "Host";
+	String guestPlayer = "Guest";
 	static boolean serverTurn;
 	static boolean guestTurn;
 	static boolean gameOver = false;
@@ -24,6 +27,8 @@ public class game implements Runnable {
 	
 	static int totalHitPoints = 17;
 	static int totalEnemyPoints = 17;
+	
+	static private Clip clip;
 	
 	/*
 	 * For shootInfo the first two slots will be the #! to tell the system this is system information
@@ -72,7 +77,6 @@ public class game implements Runnable {
 		}else{
 			serverGUI.createScorePanel();
 		}
-		myShipGrid.displayGrid();
 	}
 
 	@Override
@@ -133,6 +137,7 @@ public class game implements Runnable {
 	}
 	
 	public static boolean checkForSunk(char value){
+		System.out.println(value);
 		boolean sunk = false;
 		switch(value){
 		case 'C':
@@ -162,6 +167,52 @@ public class game implements Runnable {
 			break;
 		}
 		return sunk;
+	}
+	
+	static public void playSound(int sound){
+		AudioInputStream audioInputStream = null;
+		try {
+			switch (sound){
+			case 0:
+				audioInputStream = AudioSystem.getAudioInputStream(new File(Constants.SONAR).getAbsoluteFile());
+				break;
+			case 1:
+				audioInputStream = AudioSystem.getAudioInputStream(new File(Constants.TAPS).getAbsoluteFile());
+				break;
+			case 2:
+				audioInputStream = AudioSystem.getAudioInputStream(new File(Constants.BLAST).getAbsoluteFile());
+				break;
+			case 3:
+				audioInputStream = AudioSystem.getAudioInputStream(new File(Constants.MISS).getAbsoluteFile());
+				break;
+			case 4:
+				audioInputStream = AudioSystem.getAudioInputStream(new File(Constants.ABANDON).getAbsoluteFile());
+				break;
+			case 5:
+				audioInputStream = AudioSystem.getAudioInputStream(new File(Constants.WINNER).getAbsoluteFile());
+				break;
+			case 99:
+				clip.stop();
+				break;
+			}
+			if(sound != 99){
+				clip=AudioSystem.getClip();
+				clip.open(audioInputStream);
+				clip.start();	
+			}
+			
+			if (sound == 0){
+				clip.loop(Clip.LOOP_CONTINUOUSLY);
+			}
+		} catch (UnsupportedAudioFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		} catch (LineUnavailableException e){
+				e.printStackTrace();
+		}
 	}
 }
 

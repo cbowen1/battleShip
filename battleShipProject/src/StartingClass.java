@@ -1,9 +1,12 @@
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,6 +15,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 public class StartingClass implements ActionListener {
+	Clip clip;
 	JFrame mainFrame = null;
 	JButton myButton = null;
 	JButton clientButton = null;
@@ -52,6 +56,19 @@ public class StartingClass implements ActionListener {
 				System.exit(0);
 			}
 		});
+		/*
+		try {
+	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(Constants.SONAR).getAbsoluteFile());
+	        clip = AudioSystem.getClip();
+	        clip.open(audioInputStream);
+	        clip.start();
+	        clip.loop(Clip.LOOP_CONTINUOUSLY);
+	    } catch(Exception ex) {
+	        System.out.println("Error with playing sound.");
+	        ex.printStackTrace();
+	    }
+	    */
+		game.playSound(0);
 		
 		background =  new JLabel(new ImageIcon(Constants.SPLASH)); 
 		myButton = new JButton("Server");
@@ -71,10 +88,12 @@ public class StartingClass implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (myButton == e.getSource()) {
 			clientButton.setEnabled(false);
+			game.playSound(99);
 			new serverGUI();
 			mainFrame.dispose();
 		}else if(clientButton == e.getSource()){		
 			myButton.setEnabled(false);
+			game.playSound(99);
 			new clientGUI();
 			mainFrame.dispose();
 		}

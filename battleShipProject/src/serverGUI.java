@@ -85,6 +85,8 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 	public static JLabel enemyHitPoints;
 	public static JLabel yourHitPoints;
 	
+	private static JLabel youSunk;
+	
     public serverGUI() {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -111,9 +113,6 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
     private void initComponents() {
     	Game = new game();
     	Game.setRunner("server");
-    	
-    	Game.setGuestPlayer("Cale");
-    	Game.setHostPlayer("Ryan");
     	
     	beginGame = new JButton();
     	randomShips = new JButton();
@@ -314,7 +313,8 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
         userEnteredIP.setVisible(false);
 
         chatInput.setText("");
-
+        beginGame.setEnabled(false);
+        
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -396,6 +396,7 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			oos = new ObjectOutputStream(clientSocket.getOutputStream());
 			ois = new ObjectInputStream(clientSocket.getInputStream());
 			while(true){
+				beginGame.setEnabled(true);
 				Object input = ois.readObject();
 				String text = input.toString();
 				/*
@@ -409,7 +410,11 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 						game.guestReady = true;
 						textBox.setText(textBox.getText()+Game.getGuestPlayer()+" is ready.\n");
 					}else if(text.equals("GAMEOVER")){
+						whatDidYouSink("You WON!");
+						game.serverTurn = false;
 						game.gameOver = true;
+					}else if(text.equals("GRID")){
+						myShipGrid.displayGrid();
 					}else{
 						if(text.charAt(0)=='H'||text.charAt(0)=='M'){
 							paintHit(text);
@@ -419,24 +424,45 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
 							int x = Character.getNumericValue(text.charAt(0));
 							int y = Character.getNumericValue(text.charAt(1));
 							if(myShipGrid.checkForHit(x, y)){
-								Constants.myGrid[x][y] = 'X';
+								game.playSound(2);
 								placePeg('h',x,y);
 								game.totalHitPoints--;
 								setScore();
 								if(game.totalHitPoints == 0){
+									game.playSound(1);
+									whatDidYouSink("LOSER!");
 									textBox.setText("SORRY!! You Lost!");
 									game.gameOver = true;
 									sendMessage("#!GAMEOVER");
 								}
-								char value = Constants.myGrid[x][y];
+								char value = Constants.myGrid[y][x];
+								switch (value){
+								case 'C':
+									game.carrierHitPoints--;
+									break;
+								case 'B':
+									game.battleshipHitPoints--;
+									break;
+								case 'R':
+									game.cruiserHitPoints--;
+									break;
+								case 'S':
+									game.subHitPoints--;
+									break;
+								case 'D':
+									game.destroyerHitPoints--;
+									break;
+								}
 								game.returnInfo = "#!H"+value;
-								
+								Constants.myGrid[y][x] = 'X';
 								if(game.checkForSunk(value)){
 									game.returnInfo = game.returnInfo+"X";
+									game.playSound(4);
 								}else{
 									game.returnInfo = game.returnInfo+"O";
 								}
 							}else{
+								game.playSound(3);
 								game.returnInfo = "#!M";
 								placePeg('m',x,y);
 							}
@@ -564,22 +590,21 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
         	if(sunk == 'X'){
         		switch (hitShip){
         		case 'C':
-        			System.out.println("You sunk the carrier");
+        			whatDidYouSink("Carrier Sunk");
         			break;
         		case 'B':
-        			System.out.println("You sunk the battleship");
-        			//battleship sunk
+        			whatDidYouSink("Battleship Sunk");
         			break;
         		case 'R':
-        			System.out.println("You sunk the cruiser");
+        			whatDidYouSink("Cruiser Sunk");
         			//cruiser sunk
         			break;
         		case 'S':
-        			System.out.println("You sunk the sub");
+        			whatDidYouSink("Submarine Sunk");
         			//sub sunk
         			break;
         		case 'D':
-        			System.out.println("you sunk the destroyer");
+        			whatDidYouSink("Destroyer Sunk");
         			//destroyer sunk
         			break;
         		}
@@ -607,12 +632,16 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
     	shipMenu.repaint();
     	enemyHitPoints = new JLabel();
     	yourHitPoints = new JLabel();
+    	youSunk = new JLabel();
     	
     	enemyHitPoints.setBounds(140, 115, 200, 30);
     	yourHitPoints.setBounds(140, 150, 200, 30);
+    	youSunk.setBounds(15,230,200,30);
+    	
     	shipMenu.setLayout(null);
     	shipMenu.add(enemyHitPoints,0);
     	shipMenu.add(yourHitPoints,1);
+    	shipMenu.add(youSunk,0);
     	
     	//This allows us to use our own font to keep everything similar looking
     	Font myFont = null;
@@ -631,11 +660,15 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
     	ge.registerFont(myFont);
     	enemyHitPoints.setFont(myFont);
     	yourHitPoints.setFont(myFont);
+    	youSunk.setFont(myFont);
     	setScore();
     }
     static private void setScore(){
     	enemyHitPoints.setText(Integer.toString(game.totalEnemyPoints));
     	yourHitPoints.setText(Integer.toString(game.totalHitPoints));
+    }
+    private void whatDidYouSink(String msg){
+    	youSunk.setText(msg);
     }
     
     private void placeRandomShips(){
@@ -698,10 +731,10 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
             		yPx = 225;
             		break;
             	case 8:
-            		yPx = 291;
+            		yPx = 257;
             		break;
             	case 9:
-            		yPx = 290;
+            		yPx = 291;
             		break;
             	}
             	myShipGrid.carrierLocation[0]=xRand;
@@ -1444,5 +1477,6 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
             	}
         	}	
     	}
+    	myShipGrid.displayGrid();
     }
 }

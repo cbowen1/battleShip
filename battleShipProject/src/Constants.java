@@ -1,6 +1,6 @@
 
 public class Constants {
-	public static final String SPLASH = "src/img/splash.png";
+	public static final String SPLASH = "src/img/sonar.gif";
 	public static final String HEADER = "src/img/header2.png";
 	public static final String GRID = "src/img/grid2.png";
 	public static final String BIGGRID = "src/img/bigGrid1.png";
@@ -22,6 +22,14 @@ public class Constants {
 	public static final String SCOREBOX = "src/img/scoreBoard1.png";
 	
 	public static final String FONT = "src/img/ARMY_RUST.ttf";
+	
+	//SOUND EFFECTS
+	public static final String SONAR = "src/sound/sonar.wav";
+	public static final String ABANDON = "src/sound/abandonShip.wav";
+	public static final String BLAST = "src/sound/torpedo_explosion.wav";
+	public static final String MISS = "src/sound/water_explosion.wav";
+	public static final String TAPS = "src/sound/taps.wav";
+	public static final String WINNER = "src/sound/Gamewon.wav";
 	
 	public static char[][] myGrid;
 }
