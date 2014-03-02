@@ -585,7 +585,11 @@ public class serverGUI extends JFrame implements Runnable, ActionListener,KeyLis
         	game.totalEnemyPoints--;
         	setScore();
         	if(game.totalEnemyPoints == 0){
-        		game.gameOver = true;
+        		game.playSound(5);
+				whatDidYouSink("WINNER");
+				textBox.setText("YAY!! You Won!");
+				game.gameOver = true;
+//				sendMessage("#!GAMEOVER");
         	}
         	if(sunk == 'X'){
         		switch (hitShip){

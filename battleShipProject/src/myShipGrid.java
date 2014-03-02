@@ -42,6 +42,7 @@ public class myShipGrid {
 		}
 		return check;
 	}
+	
 	public static void displayGrid(){
 		for(int i=0;i<10;i++){
 			for(int j=0;j<10;j++){
@@ -59,6 +60,7 @@ public class myShipGrid {
 		}
 		return hit;
 	}
+	
 	public static int getXPx(int x) {
 		if(x == 9){
 			x = 292;
@@ -83,6 +85,7 @@ public class myShipGrid {
 		}
 		return x;
 	}
+	
 	public static int getYPx(int y) {
 		if(y == 0){
 			y = -1;
@@ -132,6 +135,7 @@ public class myShipGrid {
 		}
 		return x;
 	}
+	
 	public static int getBIGxPx(int x) {
 		switch (x){
 		case 0:
@@ -167,6 +171,7 @@ public class myShipGrid {
 		}
 		return x;
 	}
+	
 	public static int getBIGyPx(int y){
 		switch (y){
 		case 0:

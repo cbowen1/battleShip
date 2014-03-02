@@ -619,7 +619,11 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
         	game.totalEnemyPoints--;
         	setScore();
         	if(game.totalEnemyPoints == 0){
-        		game.gameOver = true;
+        		game.playSound(5);
+				whatDidYouSink("WINNER");
+				textBox.setText("YAY!! You Won!");
+				game.gameOver = true;
+//				sendMessage("#!GAMEOVER");
         	}
         	if(sunk == 'X'){
         		switch (hitShip){
@@ -634,7 +638,6 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
         			break;
         		case 'S':
         			whatDidYouSink("Submarine Sunk");
-        			//sub sunk
         			break;
         		case 'D':
         			whatDidYouSink("Destroyer Sunk");
@@ -682,10 +685,8 @@ public class clientGUI extends JFrame implements Runnable, ActionListener,KeyLis
 			myFont = Font.createFont(Font.TRUETYPE_FONT, fontFile).
 					deriveFont(Font.PLAIN,22f);
 		} catch (FontFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
