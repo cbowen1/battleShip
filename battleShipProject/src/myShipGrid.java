@@ -1,3 +1,7 @@
+/**************************************
+ * myShipGrid.java
+ * Cale Bowen and Ryan Mulligan
+ **************************************/
 
 public class myShipGrid {
 	public static boolean carrierPlaced = false;
@@ -5,13 +9,20 @@ public class myShipGrid {
 	public static boolean cruiserPlaced = false;
 	public static boolean subPlaced = false;
 	public static boolean destroyerPlaced = false;
-	
+
 	public static int[] carrierLocation = new int[2];
 	public static int[] battleshipLocation = new int[2];
 	public static int[] cruiserLocation = new int[2];
 	public static int[] subLocation = new int[2];
 	public static int[] destroyerLocation = new int[2];
-	
+
+	/*
+	 * check(char, int, int[])
+	 * This method checks if there is already a ship in the position
+	 * that you are trying to set another ship
+	 * If there is a ship already there, display an overlap message 
+	 * and make the user set the ship somewhere else
+	 */
 	public static boolean check(char orient,int shipSize,int[]loc){
 		boolean check = true;
 		char ship;
@@ -38,11 +49,15 @@ public class myShipGrid {
 			}else{
 				serverGUI.displayText("Ship Overlap Error");
 			}
-			
+
 		}
 		return check;
 	}
-	
+
+	/*
+	 * displayGrid()
+	 * Prints the board out to the console
+	 */
 	public static void displayGrid(){
 		for(int i=0;i<10;i++){
 			for(int j=0;j<10;j++){
@@ -52,6 +67,10 @@ public class myShipGrid {
 		}
 	}
 	
+	/*
+	 * checkForHit(int, int)
+	 * Returns true if the shot is a hit, false otherwise
+	 */
 	public static boolean checkForHit(int x,int y){
 		boolean hit = true;
 		char gridValue = Constants.myGrid[y][x];
@@ -60,7 +79,7 @@ public class myShipGrid {
 		}
 		return hit;
 	}
-	
+
 	public static int getXPx(int x) {
 		if(x == 9){
 			x = 292;
@@ -85,7 +104,7 @@ public class myShipGrid {
 		}
 		return x;
 	}
-	
+
 	public static int getYPx(int y) {
 		if(y == 0){
 			y = -1;
@@ -110,7 +129,7 @@ public class myShipGrid {
 		}	
 		return y;
 	}
-	
+
 	public static int mainXpoint(int x){
 		if(x<67){
 			x = 0;
@@ -135,7 +154,7 @@ public class myShipGrid {
 		}
 		return x;
 	}
-	
+
 	public static int getBIGxPx(int x) {
 		switch (x){
 		case 0:
@@ -171,7 +190,7 @@ public class myShipGrid {
 		}
 		return x;
 	}
-	
+
 	public static int getBIGyPx(int y){
 		switch (y){
 		case 0:

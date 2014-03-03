@@ -1,11 +1,13 @@
-
+/**************************************
+ * Grid.java
+ * Cale Bowen and Ryan Mulligan
+ **************************************/
 
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -22,99 +24,99 @@ public class Grid extends JFrame {
 		textArea = textBox;
 		boxSize = width;
 		//playerPanel = new JPanel(); // set up panel for squares in board
-	    playerPanel.setLayout( new GridLayout( 10, 10, 0, 0 ) );	
-	    playerGrid = new Square[10][10]; // create Grid
-	    
-	    //playerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Player Board"));
-	    // loop over the rows in the board
-	    for ( int row = 0; row < playerGrid.length; row++ ) 
-	    {
-	       // loop over the columns in the board
-	       for ( int column = 0; column < playerGrid[ row ].length; column++ ) 
-	       {
-	          // create square
-	          playerGrid[ row ][ column ] = new Square( " ", row, column);
-	          playerPanel.add( playerGrid[ row ][ column ] ); // add square
-	          //new MyDropTargetListener(playerGrid[row][column]);
-	          
-	       } // end inner for
-	    } // end outer for
+		playerPanel.setLayout( new GridLayout( 10, 10, 0, 0 ) );	
+		playerGrid = new Square[10][10]; // create Grid
 
-	      
-	  //  setVisible( true ); // show window
-	      
+		//playerPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Player Board"));
+		// loop over the rows in the board
+		for ( int row = 0; row < playerGrid.length; row++ ) 
+		{
+			// loop over the columns in the board
+			for ( int column = 0; column < playerGrid[ row ].length; column++ ) 
+			{
+				// create square
+				playerGrid[ row ][ column ] = new Square( " ", row, column);
+				playerPanel.add( playerGrid[ row ][ column ] ); // add square
+				//new MyDropTargetListener(playerGrid[row][column]);
+
+			} // end inner for
+		} // end outer for
+
+
+		//  setVisible( true ); // show window
+
 	}
-	
-	   // private inner class for the squares on the board
-	   private class Square extends JPanel 
-	   {
-	      private String contents; // mark to be drawn in this square
-	      private int xCord;
-	      private int yCord;// location of square
-	   
-	      public Square( String squareContents, int x, int y )
-	      {
-	    	  contents = squareContents; // set mark for this square
-	    	 
-	    	  xCord = x;// set location of this square 
-	    	  yCord = y;// set location of this square
 
-	         addMouseListener( 
-	            new MouseAdapter() 
-	            {
-	               public void mouseReleased( MouseEvent e )
-	               {
-	                  setCurrentSquare( Square.this ); // set current square
+	// private inner class for the squares on the board
+	private class Square extends JPanel 
+	{
+		private String contents; // mark to be drawn in this square
+		private int xCord;
+		private int yCord;// location of square
 
-	               } // end method mouseReleased
-	               
-				private void setCurrentSquare(Square square) {
-					if(game.runner.equals("client")){
-						if(game.guestTurn){
-							game.shootInfo="#!"+xCord+yCord;
-							System.out.println(xCord + yCord);
-							clientGUI.sendMessage(game.shootInfo);
-							game.shootInfo = "";
-							game.guestTurn = false;
-							game.serverTurn = true;
+		public Square( String squareContents, int x, int y )
+		{
+			contents = squareContents; // set mark for this square
+
+			xCord = x;// set location of this square 
+			yCord = y;// set location of this square
+
+			addMouseListener( 
+					new MouseAdapter() 
+					{
+						public void mouseReleased( MouseEvent e )
+						{
+							setCurrentSquare( Square.this ); // set current square
+
+						} // end method mouseReleased
+
+						private void setCurrentSquare(Square square) {
+							if(game.runner.equals("client")){
+								if(game.guestTurn){
+									game.shootInfo="#!"+xCord+yCord;
+									System.out.println(xCord + yCord);
+									clientGUI.sendMessage(game.shootInfo);
+									game.shootInfo = "";
+									game.guestTurn = false;
+									game.serverTurn = true;
+								}
+							}else{	//the server is the one that is running
+								if(game.serverTurn){
+									game.shootInfo="#!"+xCord+yCord;
+									serverGUI.sendMessage(game.shootInfo);
+									game.shootInfo = "";
+									game.serverTurn = false;
+									game.guestTurn = true;
+								}
+
+							}
 						}
-					}else{	//the server is the one that is running
-						if(game.serverTurn){
-							game.shootInfo="#!"+xCord+yCord;
-							serverGUI.sendMessage(game.shootInfo);
-							game.shootInfo = "";
-							game.serverTurn = false;
-							game.guestTurn = true;
-						}
-						
-					}
-				}
-	            } // end anonymous inner class
-	         ); // end call to addMouseListener
-	         	      
-	      } // end Square constructor
+					} // end anonymous inner class
+					); // end call to addMouseListener
+
+		} // end Square constructor
 
 
-	      // return preferred size of Square
-	      public Dimension getPreferredSize() 
-	      { 
-	         return new Dimension( boxSize, boxSize ); // return preferred size
-	      } // end method getPreferredSize
+		// return preferred size of Square
+		public Dimension getPreferredSize() 
+		{ 
+			return new Dimension( boxSize, boxSize ); // return preferred size
+		} // end method getPreferredSize
 
-	      // return minimum size of Square
-	      public Dimension getMinimumSize() 
-	      {
-	         return getPreferredSize(); // return preferred size
-	      } // end method getMinimumSize
+		// return minimum size of Square
+		public Dimension getMinimumSize() 
+		{
+			return getPreferredSize(); // return preferred size
+		} // end method getMinimumSize
 
-	      // draw Square
-	      public void paintComponent( Graphics g )
-	      {
-	         super.paintComponent( g );
+		// draw Square
+		public void paintComponent( Graphics g )
+		{
+			super.paintComponent( g );
 
-	         g.drawRect( 0, 0, boxSize-1, boxSize-1 ); // draw square
-	         //g.drawString( contents, 11, 20 ); // draw mark   
-	      } // end method paintComponent
-	   } // end inner-class Square
+			g.drawRect( 0, 0, boxSize-1, boxSize-1 ); // draw square
+			//g.drawString( contents, 11, 20 ); // draw mark   
+		} // end method paintComponent
+	} // end inner-class Square
 
 }

@@ -1,6 +1,10 @@
+/**************************************
+ * game.java
+ * Cale Bowen and Ryan Mulligan
+ **************************************/
+
 import java.io.File;
 import java.io.IOException;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -8,7 +12,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-
 
 public class game implements Runnable {
 	static boolean hostReady = false;
@@ -18,18 +21,18 @@ public class game implements Runnable {
 	static boolean serverTurn;
 	static boolean guestTurn;
 	static boolean gameOver = false;
-	
+
 	static int carrierHitPoints = 5;
 	static int battleshipHitPoints = 4;
 	static int cruiserHitPoints = 3;
 	static int subHitPoints = 3;
 	static int destroyerHitPoints = 2;
-	
+
 	static int totalHitPoints = 17;
 	static int totalEnemyPoints = 17;
-	
+
 	static private Clip clip;
-	
+
 	/*
 	 * For shootInfo the first two slots will be the #! to tell the system this is system information
 	 * 	the third slot will be the x-coordinate we are attempting to shoot
@@ -46,15 +49,15 @@ public class game implements Runnable {
 
 	static String runner;
 	private JTextArea text;
-	
+
 	void setRunner(String txt){
 		runner = txt;
 	}
-	
+
 	static public String getRunner(){
 		return runner;
 	}
-	
+
 	void setHostPlayer(String name){
 		hostPlayer = name;
 	}
@@ -71,8 +74,8 @@ public class game implements Runnable {
 		Thread myThread = new Thread(this);
 		myThread.start();
 		text = textBox;
-		
-		if(getRunner()=="client"){
+		// swap ship panel for score panel when that player is ready
+		if(getRunner()=="client"){				
 			clientGUI.createScorePanel();
 		}else{
 			serverGUI.createScorePanel();
@@ -81,34 +84,36 @@ public class game implements Runnable {
 
 	@Override
 	public void run() {
-		if(getRunner()=="client"){
+		if(getRunner()=="client"){			// client set ships and pressed play
 			guestReady = true;
 			clientGUI.sendMessage("#!READY");
-		}else{
+		}else{								// server set ships and pressed play
 			serverGUI.sendMessage("#!READY");
 			hostReady = true;
 		}
-		
+
 		while(!hostReady || !guestReady){
+			// wait 240 ms and check again if they're both ready
 			try {
 				Thread.sleep(240);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		// server gets first turn
 		serverTurn = true;
 		guestTurn = false;
-		
+
 		if(getRunner() == "server") {
 			while (!gameOver){
 				while(!serverTurn) {
 					if (gameOver) {
 						break;
 					}
-					
+
 					text.setText("Please wait for your opponent");
 					try {
-						Thread.sleep(500);
+						Thread.sleep(500);				// check every 500 ms for a move from client
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -123,7 +128,7 @@ public class game implements Runnable {
 					}
 					text.setText("Please wait for your opponent");
 					try {
-						Thread.sleep(500);
+						Thread.sleep(500);				// check every 500 ms for a move from server
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -133,13 +138,13 @@ public class game implements Runnable {
 		}
 
 		text.setText("Game Over\nThanks for playing");
-		
+
 	}
-	
+
 	public static boolean checkForSunk(char value){
 		System.out.println(value);
 		boolean sunk = false;
-		switch(value){
+		switch(value){				// if any ship has 0 hit points left, it is now considered sunk
 		case 'C':
 			if(carrierHitPoints == 0){
 				sunk = true;
@@ -168,7 +173,7 @@ public class game implements Runnable {
 		}
 		return sunk;
 	}
-	
+
 	static public void playSound(int sound){
 		AudioInputStream audioInputStream = null;
 		try {
@@ -196,22 +201,21 @@ public class game implements Runnable {
 				break;
 			}
 			if(sound != 99){
+				// start playing sound
 				clip=AudioSystem.getClip();
 				clip.open(audioInputStream);
 				clip.start();	
 			}
-			
+			// repeat sonar sound on main screen until screen is closed
 			if (sound == 0){
 				clip.loop(Clip.LOOP_CONTINUOUSLY);
 			}
 		} catch (UnsupportedAudioFileException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			e.printStackTrace();
 		} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			e.printStackTrace();
 		} catch (LineUnavailableException e){
-				e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 }

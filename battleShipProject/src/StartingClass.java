@@ -1,9 +1,13 @@
+/**************************************
+ * StartingClass.java
+ * Cale Bowen and Ryan Mulligan
+ **************************************/
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -24,28 +28,28 @@ public class StartingClass implements ActionListener {
 	JTextField enterField = null;
 
 	public static void main(String args[]) {
-		Constants.myGrid = new char[10][10];
+		Constants.myGrid = new char[10][10];	// creates new 2D array for board
 		for(int i=0;i<10;i++){
 			for(int j=0;j<10;j++){
-				Constants.myGrid[i][j]='-';
+				Constants.myGrid[i][j]='-';		// sets each spot to '-'
 			}
 		}
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+		try {
+			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (ClassNotFoundException ex) {
+			java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (InstantiationException ex) {
+			java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (IllegalAccessException ex) {
+			java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+			java.util.logging.Logger.getLogger(StartingClass.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		}
 		StartingClass ex = new StartingClass();
 	}
 
@@ -67,19 +71,19 @@ public class StartingClass implements ActionListener {
 	        System.out.println("Error with playing sound.");
 	        ex.printStackTrace();
 	    }
-	    */
+		 */
 		game.playSound(0);
-		
+		// open splash screen for choosing client or server
 		background =  new JLabel(new ImageIcon(Constants.SPLASH)); 
-		myButton = new JButton("Server");
-		clientButton = new JButton("Client");
+		myButton = new JButton("Server");						// make server button
+		clientButton = new JButton("Client");					// make client button
 		clientButton.addActionListener(this);
 		myButton.addActionListener(this);
 		myButton.setBounds(10, 10, 80, 30);
 		clientButton.setBounds(10,55,80,30);
 		//mainFrame.setLocationRelativeTo(null);
-		mainFrame.add(myButton);
-		mainFrame.add(clientButton);
+		mainFrame.add(myButton);								// add server button
+		mainFrame.add(clientButton);							// add client button
 		mainFrame.add(background);
 		mainFrame.setSize(1080, 800);
 		mainFrame.setVisible(true);
@@ -88,14 +92,14 @@ public class StartingClass implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (myButton == e.getSource()) {
 			clientButton.setEnabled(false);
-			game.playSound(99);
-			new serverGUI();
-			mainFrame.dispose();
+			game.playSound(99);									// stop playing sonar sound
+			new serverGUI();									// create new server GUI
+			mainFrame.dispose();								// close splash screen
 		}else if(clientButton == e.getSource()){		
 			myButton.setEnabled(false);
-			game.playSound(99);
-			new clientGUI();
-			mainFrame.dispose();
+			game.playSound(99);									// stop playing sonar sound
+			new clientGUI();									// create new client GUI
+			mainFrame.dispose();								// close splash screen
 		}
 	}
 }
